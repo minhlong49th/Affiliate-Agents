@@ -16,10 +16,11 @@ You do NOT write LP content. JSON only.
 
 ## INPUTS
 
-Read `./output/.pipeline_input.json` for all input fields:
+Read `./output/[brand_slug]/.pipeline_input.json` for all input fields:
 - brand_name, brand_url, affiliate_url, network, lp_type
 - coupon_code, coupon_percent, target_keyword, top_product
 - competitor_brand, keyword_list
+- brand_slug (used to locate all pipeline files)
 
 ---
 
@@ -49,19 +50,83 @@ payout threshold, PPC policy, recurring commission, program age.
 Trustpilot/Google rating (stars + count), year founded, community presence.
 If rating unavailable: mark MISSING (do not estimate).
 
-**TASK 4 — Pain Vocabulary**
-5–8 specific pain phrases real users in this niche express. Specific, not generic.
-Example good: "my plants hit a wall at week 6 no matter what I feed them"
-Example bad: "tired of expensive soil products"
+**TASK 4 — Pain Vocabulary + Pain Stack**
+- **Pain Stack (NEW — 3 specific pains for the V2 Hook):**
+  - Pain 1 — Convenience: can't find right size/product/variant locally (specific to niche)
+  - Pain 2 — Knowledge: staff at big box stores can't give real product advice (specific to niche)
+  - Pain 3 — Trust: ordered online, arrived wrong/damaged/not as described (specific to niche)
+  Each pain = 1 sentence, max 15 words. No padding. No solution.
+- **Pain Vocabulary:** 5–8 specific pain phrases real users in this niche express. Specific, not generic.
+  Example good: "my plants hit a wall at week 6 no matter what I feed them"
+  Example bad: "tired of expensive soil products"
+
+Output both `pain_stack` (3 strings) and `pain_vocabulary` (5-8 strings).
 
 **TASK 5 — Keywords**
 Primary keyword based on lp_type. Secondary keywords (3–4 variants). Volume tier.
 IF keyword_list is non-empty → primary = first item in that list.
 IF keyword_list is empty → derive from research.
 
-**TASK 6 — Competitor Signal** (comparison LP only)
-If lp_type = "comparison" AND competitor_brand provided:
-Competitor price, main claim, 2 areas affiliate brand wins, 1 area competitor wins.
+**TASK 6 — Competitor Signal**
+Runs for coupon LP and comparison LP.
+
+If competitor_brand provided by user → use it directly.
+If competitor_brand NOT provided AND lp_type is coupon or comparison:
+  → Intelligently select a known competitor that HIGHLIGHTS the brand's strengths.
+    - Brand = premium materials / high price → pick budget competitor (materials advantage stands out)
+    - Brand = budget option → pick premium competitor (price advantage stands out)
+  → Always find:
+    - 1 clear advantage brand has over competitor (materials, ingredients, build quality, shipping)
+    - 1 clear advantage competitor has over brand (honesty signal — price, shipping speed, returns)
+  → Record competitor_selection_rationale.
+
+If lp_type is review/advertorial/quiz and no competitor_brand → skip.
+
+**TASK 7 — Material Audit (NEW)**
+From brand_url: Extract specific product materials/ingredients/fabric/build based on product type:
+- Clothing: fabric composition (%), stitching method, washability/care
+- Garden/Soil: N-P-K levels, ingredient sourcing, texture description
+- Gadgets/Tools: weight, plastic type vs metal grade, ergonomics, key components
+- Food/Consumables: ingredient list, sourcing, certifications (organic, non-GMO)
+- Other: key build materials, durability indicators, manufacturing notes
+
+Output: `material_audit` object.
+
+**TASK 8 — Logistics Check (NEW)**
+Search brand_url for shipping and logistics data:
+- Free shipping threshold ($ amount)
+- Average/estimated shipping cost
+- Shipping time estimate (e.g. "3-5 business days")
+- Weight note (any product over 10 lbs — flag as "heavy")
+- Geographic restrictions (Alaska/Hawaii, international, specific states)
+- Packaging quality notes (from returns page, FAQ, or Trustpilot mentions)
+
+Output: `logistics` object.
+
+**TASK 9 — Trustpilot Deep Dive (NEW)**
+If Trustpilot/review URL available:
+- Extract exact numerical rating (e.g. 4.7/5) and total review count
+- Find 2 specific real cons/logistics complaints — pull direct quotes if possible
+- Find 2 common praise themes (what happy customers consistently mention)
+- If page inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
+
+If no review URL provided: set all fields to null, `verification_status: "NOT_PROVIDED"`.
+
+Output: `trustpilot_deep` object.
+
+**TASK 10 — Hero Product (NEW)**
+From brand_url or network listing:
+- Identify the best-seller / hero product (most prominent, most reviewed, or labeled "Best Seller")
+- Record: name, price (USD), why it's the hero (social proof signal, e.g. "500+ 5-star reviews")
+
+Output: `hero_product` object.
+
+**TASK 11 — Best Public Discount (NEW)**
+If user did NOT provide coupon_code:
+- Find the best publicly advertised discount on the brand site (banner, promo bar, popup)
+- Record: code (or "auto-applied"), discount description (e.g. "15% off first order")
+
+If user DID provide coupon_code → set best_public_discount = null (user's code takes priority).
 
 ---
 
@@ -75,6 +140,8 @@ Competitor price, main claim, 2 areas affiliate brand wins, 1 area competitor wi
 | Commission < $8/sale | COMMISSION_BELOW_FLOOR |
 | Rating < 3.5 stars | RATING_BELOW_THRESHOLD |
 | Brand site inaccessible | SITE_INACCESSIBLE |
+| Trustpilot page inaccessible | TRUSTPILOT_INACCESSIBLE |
+| Competitor auto-selected (not user-provided) | COMPETITOR_AUTO_SELECTED |
 
 overall = "high" (all confirmed), "medium" (1–3 missing/estimated), "low" (commission/URL/PPC unknown)
 
@@ -82,7 +149,7 @@ overall = "high" (all confirmed), "medium" (1–3 missing/estimated), "low" (com
 
 ## OUTPUT
 
-Save this exact JSON structure to `./output/.brand_data.json`.
+Save this exact JSON structure to `./output/[brand_slug]/.brand_data.json`.
 No prose. No explanation. Only JSON.
 Use null for missing data. Use "ESTIMATED" tag in value if inferred not confirmed.
 
@@ -127,6 +194,9 @@ Use null for missing data. Use "ESTIMATED" tag in value if inferred not confirme
     "amazon_presence": false
   },
   "pain_vocabulary": [],
+  "pain_stack": [
+    "", "", ""
+  ],
   "keywords": {
     "user_supplied_list": [],
     "primary": "",
@@ -136,8 +206,44 @@ Use null for missing data. Use "ESTIMATED" tag in value if inferred not confirme
   },
   "competitor": {
     "name": null,
+    "competitor_selection_rationale": "",
     "brand_wins": [],
     "competitor_wins": []
+  },
+  "material_audit": {
+    "product_type": "clothing | garden | gadget | food | other",
+    "key_materials": [],
+    "build_quality_notes": ""
+  },
+  "logistics": {
+    "free_shipping_threshold_usd": null,
+    "avg_shipping_cost_usd": null,
+    "shipping_time_estimate": "",
+    "weight_note": "",
+    "geographic_restrictions": "",
+    "packaging_notes": ""
+  },
+  "trustpilot_deep": {
+    "verification_status": "VERIFIED | FAILED | NOT_PROVIDED",
+    "exact_rating": "",
+    "review_count": 0,
+    "real_cons": [
+      { "issue": "", "frequency": "", "direct_quote": "" }
+    ],
+    "common_praise": []
+  },
+  "hero_product": {
+    "name": "",
+    "price_usd": 0,
+    "why_bestseller": ""
+  },
+  "best_public_discount": {
+    "code": null,
+    "description": ""
+  },
+  "brand_visual": {
+    "primary_color_hex": "",
+    "note": "Extracted from brand_url CSS or logo — e.g. #8B4513. Leave empty if not determined."
   },
   "lp_type": "",
   "data_quality": {

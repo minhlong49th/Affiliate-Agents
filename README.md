@@ -54,7 +54,7 @@ Keywords: seedsnow review, seedsnow seeds quality, is seedsnow legit
 Claude Code sẽ tự động:
 1. Kích hoạt `lp-orchestrator`
 2. Orchestrator dispatch tuần tự 4 agents
-3. Lưu HTML vào `./output/[brand]-[lp-type]-lp.html`
+3. Lưu HTML vào `./output/[brand_slug]/[brand]-[lp-type]-lp.html`
 
 ---
 
@@ -80,7 +80,12 @@ your-project/
 │   ├── copywriting_techniques.md
 │   └── html_design_system_lite.md
 └── output/
-    └── [brand-slug]-[lp-type]-lp.html ← Generated files
+    └── [brand_slug]/
+        ├── .pipeline_input.json
+        ├── .brand_data.json
+        ├── .content_blueprint.json
+        ├── .qa_result.json
+        └── [brand-slug]-[lp-type]-lp.html ← Generated files
 ```
 
 ---
@@ -101,10 +106,10 @@ your-project/
 
 ## Temp files
 
-Pipeline tạo các file tạm trong `./output/`:
+Pipeline tạo các file tạm trong `./output/[brand_slug]/`:
 - `.pipeline_input.json` — parsed user input
 - `.brand_data.json` — Worker 1 output
 - `.content_blueprint.json` — Worker 2 output
 - `.qa_result.json` — Worker 4 QA scores
 
-Xóa sau khi HTML đã confirm: `rm ./output/.*json`
+Xóa sau khi HTML đã confirm: `rm -r ./output/[brand_slug]`

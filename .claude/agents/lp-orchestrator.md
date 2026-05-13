@@ -63,13 +63,30 @@ If not provided: keyword_list = [] — Worker 1 will derive keywords from resear
 
 ---
 
-## STEP 3 — BUILD INPUT CONTEXT JSON
+## STEP 3 — COMPUTE BRAND SLUG
 
-Write this to `./output/.pipeline_input.json`:
+Derive brand_slug from brand_name:
+```
+brand_slug = brand_name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+```
+
+Create the brand subfolder:
+```
+Bash: mkdir -p "./output/[brand_slug]"
+```
+
+All subsequent pipeline files are read/written inside this subfolder.
+
+---
+
+## STEP 4 — BUILD INPUT CONTEXT JSON
+
+Write this to `./output/[brand_slug]/.pipeline_input.json`:
 
 ```json
 {
   "brand_name": "",
+  "brand_slug": "",
   "brand_url": "",
   "affiliate_url": "",
   "network": "",
@@ -85,39 +102,39 @@ Write this to `./output/.pipeline_input.json`:
 
 ---
 
-## STEP 4 — RUN PIPELINE (sequential, not parallel)
+## STEP 5 — RUN PIPELINE (sequential, not parallel)
 
-### 4a. Dispatch @agent-lp-brand-researcher
-- Input: contents of `./output/.pipeline_input.json`
-- Instruction: "Read ./output/.pipeline_input.json. Research the brand and produce brand_data JSON. Save output to ./output/.brand_data.json. End with WORKER_1_COMPLETE."
+### 5a. Dispatch @agent-lp-brand-researcher
+- Input: contents of `./output/[brand_slug]/.pipeline_input.json`
+- Instruction: "Read ./output/[brand_slug]/.pipeline_input.json. Research the brand and produce brand_data JSON. Save output to ./output/[brand_slug]/.brand_data.json. End with WORKER_1_COMPLETE."
 - Wait for WORKER_1_COMPLETE signal before proceeding.
 - If Worker 1 returns AFFILIATE_LINK_UNVERIFIED → STOP, report to user.
 
-### 4b. Dispatch @agent-lp-content-builder
-- Input: `./output/.brand_data.json` + keyword_list + lp_type
-- Instruction: "Read ./output/.brand_data.json. Build complete content blueprint. Save to ./output/.content_blueprint.json. End with WORKER_2_COMPLETE."
+### 5b. Dispatch @agent-lp-content-builder
+- Input: `./output/[brand_slug]/.brand_data.json` + keyword_list + lp_type
+- Instruction: "Read ./output/[brand_slug]/.brand_data.json. Build complete content blueprint. Save to ./output/[brand_slug]/.content_blueprint.json. End with WORKER_2_COMPLETE."
 - Wait for WORKER_2_COMPLETE signal before proceeding.
 
-### 4c. Dispatch @agent-lp-qa-checker (QA LOOP — max 3 attempts)
+### 5c. Dispatch @agent-lp-qa-checker (QA LOOP — max 3 attempts)
 
 ```
 attempt_number = 1
 
 WHILE attempt_number <= 3:
-  Instruction: "Read ./output/.brand_data.json and ./output/.content_blueprint.json.
+  Instruction: "Read ./output/[brand_slug]/.brand_data.json and ./output/[brand_slug]/.content_blueprint.json.
   Score against rubric. lp_type = [lp_type]. attempt_number = [N].
-  Save qa_result JSON to ./output/.qa_result.json. End with WORKER_4_COMPLETE."
+  Save qa_result JSON to ./output/[brand_slug]/.qa_result.json. End with WORKER_4_COMPLETE."
 
   Wait for WORKER_4_COMPLETE.
-  Read ./output/.qa_result.json.
+  Read ./output/[brand_slug]/.qa_result.json.
 
-  IF qa_result.pass_to_worker_3 = true → break loop, proceed to 4d
+  IF qa_result.pass_to_worker_3 = true → break loop, proceed to 5d
 
   IF attempt_number < 3:
     Re-dispatch @agent-lp-content-builder in REVISION MODE:
-    "Read ./output/.content_blueprint.json and ./output/.qa_result.json.
+    "Read ./output/[brand_slug]/.content_blueprint.json and ./output/[brand_slug]/.qa_result.json.
     Fix ONLY the failing sections listed in qa_result.revision_instructions.
-    Patch ./output/.content_blueprint.json with corrected sections.
+    Patch ./output/[brand_slug]/.content_blueprint.json with corrected sections.
     End with WORKER_2_COMPLETE."
     Wait for WORKER_2_COMPLETE.
     attempt_number += 1
@@ -127,14 +144,14 @@ WHILE attempt_number <= 3:
     Break loop.
 ```
 
-### 4d. Dispatch @agent-lp-html-generator
-- Input: `./output/.content_blueprint.json` (trim metadata/keyword arrays to save tokens)
-- Instruction: "Read ./output/.content_blueprint.json and ./knowledge/html_design_system_lite.md. Generate WordPress-ready HTML. Save to ./output/[brand-slug]-[lp-type]-lp.html. End with WORKER_3_COMPLETE."
+### 5d. Dispatch @agent-lp-html-generator
+- Input: `./output/[brand_slug]/.content_blueprint.json` (trim metadata/keyword arrays to save tokens)
+- Instruction: "Read ./output/[brand_slug]/.content_blueprint.json and ./knowledge/html_design_system_lite.md. Generate WordPress-ready HTML. Save to ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html. End with WORKER_3_COMPLETE."
 - Wait for WORKER_3_COMPLETE signal.
 
 ---
 
-## STEP 5 — OUTPUT REPORT
+## STEP 6 — OUTPUT REPORT
 
 After Worker 3 completes, output:
 
@@ -143,7 +160,7 @@ LP BUILD COMPLETE
 ─────────────────────────────────────────
 Brand:         [brand_name]
 LP Type:       [lp_type]
-Output file:   ./output/[brand-slug]-[lp-type]-lp.html
+Output file:   ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 Primary KW:    [target_keyword]
 Keywords used: [count] — [keyword_list joined by " · "]
 

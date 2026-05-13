@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Purpose
 This project builds affiliate landing pages using a 4-agent sequential pipeline.
-All output HTML files are saved to `./output/` (already exists).
+All output files are saved to `./output/[brand_slug]/` (orchestrator creates subfolder per brand).
 
 ## Example invocations
 
@@ -67,12 +67,12 @@ The QA loop runs up to 3 attempts. On the 3rd attempt, QA force-passes regardles
 
 ## Context-passing protocol
 
-Each agent writes its output to a temp JSON file in `./output/`:
-- Orchestrator → `./output/.pipeline_input.json`
-- Worker 1 → `./output/.brand_data.json`
-- Worker 2 → `./output/.content_blueprint.json`
-- Worker 4 (QA) → `./output/.qa_result.json`
-- Worker 3 → `./output/[brand-slug]-[lp-type]-lp.html`
+Each agent writes its output to a temp JSON file in `./output/[brand_slug]/`:
+- Orchestrator → `./output/[brand_slug]/.pipeline_input.json`
+- Worker 1 → `./output/[brand_slug]/.brand_data.json`
+- Worker 2 → `./output/[brand_slug]/.content_blueprint.json`
+- Worker 4 (QA) → `./output/[brand_slug]/.qa_result.json`
+- Worker 3 → `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
 
 Temp files (prefixed with `.`) can be deleted after the final HTML is confirmed.
 

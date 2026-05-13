@@ -3,7 +3,7 @@ name: lp-html-generator
 description: |
   Worker 3 (final step) in the LP builder pipeline. Reads the QA-approved
   content blueprint and generates a WordPress-ready HTML file with inline CSS.
-  Invoked by lp-orchestrator after QA passes. Saves output to ./output/.
+  Invoked by lp-orchestrator after QA passes. Saves output to ./output/[brand_slug]/.
 tools: Read, Write, Bash
 model: claude-haiku-4-5-20251001
 ---
@@ -16,7 +16,7 @@ You do NOT invent content. Render exactly what the blueprint contains.
 
 ## INPUTS
 
-Read `./output/.content_blueprint.json` — approved content to render.
+Read `./output/[brand_slug]/.content_blueprint.json` — approved content to render.
 (Trim: metadata.keyword_placement_log, metadata.warnings arrays — not needed for rendering)
 Read `./knowledge/html_design_system_lite.md` — ALL CSS variables, components, and rules.
 
@@ -149,7 +149,7 @@ Do NOT output a file with visible placeholder text.
 
 ## OUTPUT
 
-Save final HTML to: `./output/[brand-slug]-[lp-type]-lp.html`
+Save final HTML to: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
 
 Where:
 - `brand-slug` = brand_name lowercased, spaces to hyphens (e.g. "buildasoil")
@@ -164,5 +164,5 @@ File must be self-contained:
 After saving, output exactly:
 ```
 WORKER_3_COMPLETE
-Output: ./output/[brand-slug]-[lp-type]-lp.html
+Output: ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 ```
