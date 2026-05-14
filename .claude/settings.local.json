@@ -1,4 +1,8 @@
 {
+  "env": {
+    "NINEROUTER_URL": "http://localhost:20128",
+    "NINEROUTER_KEY": "sk-e88f990ccab8cc2d-48ai20-2fd2120b"
+  },
   "permissions": {
     "allow": [
       "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://courtsidetennis.com/products.json?limit=10\")",

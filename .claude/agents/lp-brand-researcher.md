@@ -37,6 +37,32 @@ If brand_url returns 403 or is inaccessible:
 
 ---
 
+## WEB TOOL HIERARCHY
+
+1. **WebFetch first** — use for static HTML pages, fast, lowest overhead
+2. **9Router fetch fallback** — use when WebFetch returns 403/blocked, JS-rendered pages, or empty content
+3. **9Router search** — use for open-web research (Trustpilot reviews, competitor data, coupon verification)
+
+### 9Router fetch
+```bash
+curl -sX POST $NINEROUTER_URL/v1/web/fetch \
+  -H "Authorization: Bearer $NINEROUTER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"jina/fetch","url":"<URL>","format":"markdown","max_characters":12000}'
+```
+
+### 9Router search
+```bash
+curl -sX POST $NINEROUTER_URL/v1/search \
+  -H "Authorization: Bearer $NINEROUTER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"tavily/search","query":"<search query>","max_results":5}'
+```
+
+Providers available: `fetch-combo` (auto-fallback), `jina/fetch` (fast), `firecrawl/fetch` (JS pages), `search-combo` (multi-engine).
+
+---
+
 ## RESEARCH TASKS (in order)
 
 **TASK 1 — Product & Pricing**
@@ -108,9 +134,13 @@ If Trustpilot/review URL available:
 - Extract exact numerical rating (e.g. 4.7/5) and total review count
 - Find 2 specific real cons/logistics complaints — pull direct quotes if possible
 - Find 2 common praise themes (what happy customers consistently mention)
-- If page inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
+- If page inaccessible via WebFetch → retry with 9Router fetch
+- If still inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
 
-If no review URL provided: set all fields to null, `verification_status: "NOT_PROVIDED"`.
+If no review URL provided:
+- Search `[brand_name] trustpilot reviews` via 9Router search
+- If results found: extract rating + review count, set `verification_status: "VERIFIED"`
+- If nothing found: set all fields to null, `verification_status: "NOT_PROVIDED"`.
 
 Output: `trustpilot_deep` object.
 

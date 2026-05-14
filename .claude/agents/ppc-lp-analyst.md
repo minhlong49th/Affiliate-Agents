@@ -4,7 +4,7 @@ description: |
   Worker 1 in the PPC pipeline. Fetches the landing page, extracts brand data,
   checks PPC policy (HS-1 hard stop), and selects ad group strategy.
   Invoked by ppc-orchestrator only. DO NOT invoke directly.
-tools: Read, Write, WebFetch
+tools: Read, Write, WebFetch, Bash
 model: claude-haiku-4-5-20251001
 ---
 
@@ -38,6 +38,32 @@ When fetching `landing_page_url`:
 
 ---
 
+## WEB TOOL HIERARCHY
+
+1. **WebFetch first** — use for static HTML landing pages
+2. **9Router fetch fallback** — use when WebFetch returns 403/blocked, JS-rendered pages, or empty content
+3. **9Router search** — use for PPC policy verification, competitor ads research
+
+### 9Router fetch
+```bash
+curl -sX POST $NINEROUTER_URL/v1/web/fetch \
+  -H "Authorization: Bearer $NINEROUTER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"jina/fetch","url":"<URL>","format":"markdown","max_characters":12000}'
+```
+
+### 9Router search
+```bash
+curl -sX POST $NINEROUTER_URL/v1/search \
+  -H "Authorization: Bearer $NINEROUTER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"tavily/search","query":"<search query>","max_results":5}'
+```
+
+Providers available: `fetch-combo` (auto-fallback), `jina/fetch` (fast), `firecrawl/fetch` (JS pages), `search-combo` (multi-engine).
+
+---
+
 ## TASK 1 — BRAND DATA EXTRACTION
 
 Extract:
@@ -68,6 +94,11 @@ FLAGGED (proceed with warning):
 CLEAR:
 - Explicit "PPC allowed" OR no restriction found
 ```
+
+**If policy page blocked or terms not on LP:**
+- Search `"[brand_name] affiliate program terms PPC policy"` via 9Router search
+- If search finds policy → use it for HS-1 check
+- If search finds nothing → flag: PPC_POLICY_UNKNOWN
 
 If HS-1 triggered: output `{ "error": "PPC_HS1_STOP", "reason": "[exact policy text found]" }` and end with `PPC_HS1_STOP`.
 
