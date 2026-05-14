@@ -1,2 +1,7 @@
 docs/
 output/
+# PPC pipeline temp files
+output/.*.json
+# PPC output CSVs (optional - uncomment to ignore)
+# output/*-google-ads-import.csv
+# output/*-bing-ads-import.csv
