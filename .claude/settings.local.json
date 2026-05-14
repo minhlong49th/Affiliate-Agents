@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://courtsidetennis.com/products.json?limit=10\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/products.json?limit=30\")",
+      "Bash(python -c \"import sys, json; data=json.load\\(sys.stdin\\); [print\\(f'{p[\\\\\"id\\\\\"]}: {p[\\\\\"title\\\\\"]} | {p[\\\\\"product_type\\\\\"]} | variants: {len\\(p[\\\\\"variants\\\\\"]\\)} | prices: {[v[\\\\\"price\\\\\"] for v in p[\\\\\"variants\\\\\"]]} | tags: {p[\\\\\"tags\\\\\"]}'\\) for p in data['products']]\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com\")",
+      "Bash(sed 's/<[^>]*>//g')",
+      "Bash(grep -v '^\\\\s*$')",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/about-us\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" -H \"Accept: application/json\" \"https://courtsidetennis.com/admin/api/2024-01/shop.json\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); print\\(text[:5000]\\)\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/collections/all?sort_by=best-selling\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); print\\(text[:4000]\\)\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/search?q=coupon+OR+discount+OR+code+OR+sale+OR+promo\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); print\\(text[:3000]\\)\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/affiliate-program\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/contact\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://www.google.com/search?q=courtsidetennis.com+coupon+code+2025+2026\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); print\\(text[:3000]\\)\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/reviews\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/blogs/news\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/lowest-prices\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/happy-customers\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/pages/demo\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/search?q=SAVE\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); pages = re.findall\\(r'Pages\\\\s*\\\\\\([^\\)]+\\\\\\).*?Save.*?\\(?=Shop|HELPFUL\\)', text\\); if pages: print\\(pages[0][:1000]\\); else: print\\(text[:2000]\\)\")",
+      "Bash(curl -sL --max-time 30 -H \"User-Agent: Mozilla/5.0\" \"https://courtsidetennis.com/search?q=coupon\")",
+      "Bash(curl *)",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); pages = re.findall\\(r'Pages.*?Newsletter.*?\\(?=Shop|HELPFUL\\)', text\\); print\\(pages[0] if pages else text[:1500]\\)\")",
+      "Bash(python -c \"import sys, re; html = sys.stdin.read\\(\\); html = re.sub\\(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL\\); html = re.sub\\(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL\\); text = re.sub\\(r'<[^>]*>', ' ', html\\); text = re.sub\\(r'\\\\s+', ' ', text\\).strip\\(\\); print\\(text[:2000]\\)\")",
+      "PowerShell(Get-Item *)"
+    ]
+  }
+}

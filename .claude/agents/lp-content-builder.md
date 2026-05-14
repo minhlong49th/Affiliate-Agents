@@ -5,7 +5,7 @@ description: |
   and produces a complete LP content blueprint. Also handles revision patching
   when called back by the QA checker (Worker 4). Invoked by lp-orchestrator only.
 tools: Read, Write, Edit
-model: claude-sonnet-4-6
+model: sonnet
 ---
 
 You are a professional affiliate copywriter trained in:
@@ -215,165 +215,212 @@ Add after the Final Verdict. Exactly 2–3 sentences. Last conversion opportunit
 
 Save complete content blueprint to `./output/[brand_slug]/.content_blueprint.json`.
 
-### Coupon LP Schema (V2)
+### Coupon LP Schema (V2 — Template-Compatible)
+
+For coupon LP, output JSON that matches the Jinja2 template (`templates/lp_coupon_template.html`) variables 1:1.
+The html-generator passes this JSON directly to the render script. All values must be valid strings/arrays — no placeholder tokens, no null in iterated fields.
+
+#### COLOR PALETTE GENERATION (Coupon LP — Mandatory)
+
+Before writing the blueprint, generate the `colors` object. Use `brand_data.brand_visual.primary_color_hex` if populated; otherwise derive from `brand_slug` hash. Run this Python snippet (copy into Bash, capture output):
+
+```bash
+python3 -c "
+import hashlib, json
+
+slug = '<brand_slug>'
+primary = '<primary_color_hex or empty>'
+
+if primary and primary.strip():
+    # Parse primary hex to approximate hue, then generate palette
+    h = int(primary.lstrip('#')[:6], 16)
+    hue = (h % 360)  # crude hue extraction from hex
+else:
+    h = int(hashlib.md5(slug.encode()).hexdigest()[:6], 16)
+    hue = h % 360
+
+# Known category overrides for better brand fit
+overrides = {
+    'tennis': 140, 'pickleball': 140, 'golf': 120, 'coffee': 25,
+    'fashion': 330, 'beauty': 320, 'fitness': 10, 'outdoor': 160,
+    'tech': 220, 'pet': 35, 'food': 30, 'home': 200, 'garden': 100,
+    'soil': 100, 'health': 340, 'baby': 350, 'auto': 210, 'game': 260
+}
+for kw, hv in overrides.items():
+    if kw in slug.lower():
+        hue = hv
+        break
+
+def hsl_to_hex(h, s, l):
+    h /= 360.0; s /= 100.0; l /= 100.0
+    if s == 0:
+        r = g = b = int(l * 255)
+    else:
+        def hue2rgb(p, q, t):
+            if t < 0: t += 1
+            if t > 1: t -= 1
+            if t < 1/6: return p + (q - p) * 6 * t
+            if t < 1/2: return q
+            if t < 2/3: return p + (q - p) * (2/3 - t) * 6
+            return p
+        q = l * (1 + s) if l < 0.5 else l + s - l * s
+        p = 2 * l - q
+        r = int(hue2rgb(p, q, h + 1/3) * 255)
+        g = int(hue2rgb(p, q, h) * 255)
+        b = int(hue2rgb(p, q, h - 1/3) * 255)
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+print(json.dumps({
+    'brand': hsl_to_hex(hue, 45, 23),
+    'brand_light': hsl_to_hex(hue, 40, 33),
+    'brand_dark': hsl_to_hex(hue, 50, 14),
+    'brand_mid': hsl_to_hex(hue, 42, 28),
+    'brand_shadow': f'rgba({int(hue/360*255)}, {int((hue+60)%360/360*255)}, 52, 0.30)',
+    'brand_shadow_hover': f'rgba({int(hue/360*255)}, {int((hue+60)%360/360*255)}, 52, 0.38)',
+    'accent': hsl_to_hex((hue + 40) % 360, 85, 52),
+    'accent_light': hsl_to_hex((hue + 40) % 360, 90, 88),
+    'accent_yellow': hsl_to_hex((hue + 40) % 360, 95, 96),
+    'accent_hover': hsl_to_hex((hue + 40) % 360, 80, 42)
+}))
+"
+```
+
+Paste the printed JSON directly into the `colors` field of the blueprint.
+
+#### TEMPLATE-COMPATIBLE JSON SCHEMA
 
 ```json
 {
   "lp_type": "coupon",
   "brand_slug": "",
-  "persona": "edward_v2",
-  "meta": {
-    "title": "",
-    "description": ""
+  "meta_title": "",
+  "brand_name": "",
+  "affiliate_url": "",
+  "slug": "",
+  "colors": {
+    "brand": "#XXXXXX",
+    "brand_light": "#XXXXXX",
+    "brand_dark": "#XXXXXX",
+    "brand_mid": "#XXXXXX",
+    "brand_shadow": "rgba(...)",
+    "brand_shadow_hover": "rgba(...)",
+    "accent": "#XXXXXX",
+    "accent_light": "#XXXXXX",
+    "accent_yellow": "#XXXXXX",
+    "accent_hover": "#XXXXXX"
   },
-  "sections": {
-    "article_header": {
-      "h1": "Verified [Brand Name] Discount Code & Review (2026)",
-      "disclosure": "ProductInsight analyzes materials and build quality. We may earn a commission, but our reviews remain unbiased. I don't care about marketing fluff — I care if the materials are actually consistent."
+  "hero": {
+    "eyebrow": "emoji 2026 Expert Review & Deals",
+    "headline_accent": "Discount Code",
+    "sub": "One compelling sentence about the deal and brand promise."
+  },
+  "trust_bar": {
+    "badge": "Short legitimacy signal, max 25 chars"
+  },
+  "coupon": {
+    "badge_label": "emoji EXCLUSIVE OFFER",
+    "deal_title": "Verified Deal for [Current Month]",
+    "deal_sub": "Short discount description from coupon.discount_text",
+    "code": "SAVE20 or AUTO-APPLIED",
+    "usage_seed": 22
+  },
+  "intro": {
+    "paragraphs": [
+      "Pain-stack hook paragraph combining 3 user pains from pain_stack",
+      "Brand overview pivot paragraph — how this brand solves those pains"
+    ],
+    "warning": {
+      "title": "Logistics Warning or Important Note",
+      "body": "Specific caveat from logistics or data_quality.flags"
+    }
+  },
+  "verdict": {
+    "score": "8.5",
+    "headline": "The Verdict: YES, Buy — But Know What You're Buying",
+    "paragraphs": [
+      "One-paragraph expert summary of overall recommendation."
+    ],
+    "pros": [
+      "Material/quality pro from material_audit",
+      "Logistics/shipping pro from legitimacy_signals",
+      "Price/value pro from price_quality",
+      "Service/support pro from legitimacy_signals"
+    ],
+    "cons": [
+      "Honest limitation from trustpilot_deep.real_cons or data_quality.missing_fields",
+      "Real Talk Warning — logistics limitation or estimated data caveat"
+    ]
+  },
+  "deals": [
+    {
+      "title": "Best Value Offer (from deal_stack.slot_1)",
+      "offer": "Short description of the main coupon deal",
+      "savings": "Save X% or Save $X",
+      "code": "SAVE20",
+      "btn_label": "Activate Deal"
     },
-    "pain_stack_hook": {
-      "pain_1": "",
-      "pain_2": "",
-      "pain_3": "",
-      "pivot": ""
-    },
-    "deal_stack": {
-      "slot_1": {
-        "title": "🚀 Verified Deal for [Month]",
-        "offer": "",
-        "code": "",
-        "display_mode": "reveal | visible | auto-applied",
-        "stats": "Used X times today",
-        "verified": "Verified [Today's Date]",
-        "cta_text": "Get My [X]% Off"
-      },
-      "slot_2": {
-        "title": "📦 Best Value Bundle",
-        "offer": "",
-        "savings": "Save [X]% vs Buying Individually",
-        "cta_text": "Lock In Bundle Savings"
-      },
-      "slot_3": {
-        "title": "🚚 Shipping Offer",
-        "offer": "",
-        "cta_text": "See If My Area Qualifies"
-      }
-    },
-    "verdict_pros_cons": {
-      "quick_summary": "",
-      "pros": ["", "", ""],
-      "cons": ["", ""],
-      "warning_callout": {
-        "title": "⚠️ Logistics Warning",
-        "text": ""
-      }
-    },
-    "review_comparison": {
-      "hands_on_analysis": "",
-      "truth_table": {
-        "headers": ["Feature", "[Brand Name]", "[Competitor Name]", "Winner"],
-        "rows": [
-          { "feature": "Price", "brand_value": "", "competitor_value": "", "winner": "" },
-          { "feature": "Key Material/Ingredient", "brand_value": "", "competitor_value": "", "winner": "" },
-          { "feature": "Ease of Use", "brand_value": "", "competitor_value": "", "winner": "" },
-          { "feature": "Shipping Cost", "brand_value": "", "competitor_value": "", "winner": "" }
-        ]
-      }
-    },
-    "material_analysis": {
-      "body": "",
-      "social_proof": ""
-    },
-    "ugly_truth": {
-      "cons_detail": "",
-      "logistics_check": ""
-    },
-    "price_quality": {
-      "roi_calculation": "",
-      "hidden_costs": ""
-    },
-    "verified_deals_full": {
-      "trust_trigger": "🛡️ Verified by ProductInsight Team | Last Checked: [Today's Date]",
-      "slots": []
-    },
-    "how_to_redeem": {
-      "steps": [
-        "",
-        "",
-        "",
-        "Verify the price drop before paying."
+    {
+      "title": "Shipping Offer (from deal_stack.slot_3 / logistics)",
+      "offer": "Free Shipping on $X+ Orders",
+      "savings": "",
+      "code": "AUTO-APPLIED",
+      "btn_label": "Check Availability"
+    }
+  ],
+  "review": {
+    "opening_paragraphs": [
+      "Hands-on material analysis paragraph from material_analysis.body"
+    ],
+    "comparison_table": {
+      "columns": ["Store", "Price", "Quality", "Shipping", "Support"],
+      "rows": [
+        ["BrandName", "$XX", "<span class=\"badge-winner\">Premium ✓</span>", "Free on $X+", "Phone/Email"],
+        ["CompetitorName", "$XX", "Standard", "Variable", "Email Only"]
       ]
     },
-    "faq": [
+    "extra_sections": [
       {
-        "question": "",
-        "answer": "",
-        "objection_type": "trust | risk | price"
+        "title": "Material & Build Quality Analysis",
+        "paragraphs": ["Detail from material_analysis", "Social proof from brand_data"]
       },
       {
-        "question": "",
-        "answer": "",
-        "objection_type": "trust | risk | price"
-      },
-      {
-        "question": "",
-        "answer": "",
-        "objection_type": "trust | risk | price"
+        "title": "Price vs. Quality",
+        "paragraphs": ["ROI analysis from price_quality"]
       }
-    ],
-    "verdict": {
-      "recommendation": "YES | NO | WAIT",
-      "body": ""
-    },
-    "verdict_summary": {
-      "score": "",
-      "main_pro": "",
-      "main_con": ""
-    },
-    "ps_section": {
-      "verified_date": "",
-      "code": "",
-      "text": ""
-    },
-    "sticky_footer": {
-      "text": "[Discount Amount] — Code: [CODE]",
-      "button_text": "Get My [X]% Off"
-    }
+    ]
   },
-  "ui_data": {
-    "brand_name": "",
-    "primary_brand_color": "",
-    "hero_product_name": "",
-    "referral_link": "",
-    "trustpilot_rating": "",
-    "code_display_logic": {
-      "show_code_directly": true,
-      "reason": ""
-    },
-    "comparison_data": {
-      "competitor_name": "",
-      "main_product_price": "",
-      "competitor_price": "",
-      "main_advantage": "",
-      "competitor_advantage": ""
-    },
-    "shipping_warning": {
-      "title": "",
-      "text": ""
-    }
+  "redeem": {
+    "step2": "Enter code <strong>SAVE20</strong> in the coupon field at checkout.",
+    "step3": "Verify the final price before completing your purchase."
   },
-  "rsa_ads": {
-    "headlines": [],
-    "descriptions": []
+  "faq": [
+    { "q": "Skeptical question from FAQ trust objection", "a": "Reassuring answer with specifics." },
+    { "q": "Skeptical question from FAQ risk objection", "a": "Reassuring answer with specifics." },
+    { "q": "Skeptical question from FAQ price objection", "a": "Reassuring answer with specifics." }
+  ],
+  "final_cta": {
+    "headline": "Ready to Save on BrandName?",
+    "sub": "Short summary of best offer from coupon.discount_text or ps_section",
+    "btn_label": "Activate Deal Now"
   },
-  "metadata": {
-    "primary_keyword": "",
-    "keyword_placement_log": {},
-    "warnings": [],
-    "word_count_estimate": 0
+  "sticky_footer": {
+    "text": "X% Off + Free Shipping — Limited Time"
   }
 }
 ```
+
+**Schema notes:**
+
+- `intro.warning` — include ONLY if `data_quality.flags` has entries or `logistics.weight_note` exists. Otherwise omit the key entirely (not null).
+- `deals[].savings` — can be empty string `""` if no savings text (template will hide the savings badge).
+- `deals[]` — minimum 1 deal, maximum 3. Always include main coupon deal. Add shipping deal if logistics info exists. Add bundle deal if products exist.
+- `review.comparison_table.rows` — use raw HTML strings (`<span class="badge-winner">`) for badge cells. These pass through Jinja2 unescaped.
+- `verdict.score` — string like `"8.5"` or `"9.0"`. Based on `data_quality.overall`: high→9.0, medium→8.5, low→7.5.
+- `verdict.pros` — minimum 3, maximum 4 items.
+- `verdict.cons` — minimum 2 items. Include at least one "Real Talk Warning" from logistics or estimated data.
+- `faq[]` — minimum 3 items. Objection-based questions from the FAQ section.
+- `coupon.usage_seed` — random integer 8-30. Deterministic from brand name (e.g. sum of char codes mod 23 + 8).
+- All arrays must be non-empty. Never output `null` for fields that templates iterate over. Never output `[PLACEHOLDER]` or `{{ }}` tokens in values.
 
 ### Non-Coupon LP Schema (existing — unchanged)
 
@@ -429,27 +476,48 @@ For quiz LP: replace sections with `quiz_phases` array + `result_page`.
 
 ---
 
-## CONTENT SECTION REFERENCE (Coupon LP V2)
+## CONTENT SECTION REFERENCE (Coupon LP V2 — Template-Compatible)
 
-Use this mapping from brand_data to sections:
+Use this mapping from brand_data to output fields:
 
-| Section | Primary Data Source |
+| Output Field | Primary Data Source |
 |---|---|
-| article_header.h1 | brand_data.brand.name + primary keyword |
-| pain_stack_hook | brand_data.pain_stack[] |
-| deal_stack.slot_1 | brand_data.coupon (.code, .discount_pct, .verified_date) |
-| deal_stack.slot_2 | brand_data.products (bundle logic) + best_public_discount |
-| deal_stack.slot_3 | brand_data.logistics |
-| verdict_pros_cons | brand_data.material_audit + trustpilot_deep.real_cons |
-| review_comparison.truth_table | brand_data.competitor + products.top_products[0] |
-| material_analysis | brand_data.material_audit (full detail) |
-| ugly_truth | brand_data.trustpilot_deep.real_cons + logistics |
-| price_quality | brand_data.products.top_products + competitor |
-| verified_deals_full | brand_data.coupon + logistics (repeat deal_stack with detail) |
-| how_to_redeem | brand_data.coupon.code + affiliate_program.affiliate_url |
-| faq | brand_data.pain_vocabulary + trustpilot_deep + competitor |
-| verdict | Synthesis of all above — recommend YES/NO/WAIT |
-| ps_section | Current date + coupon.code + competitor problem |
+| `meta_title` | brand_data.brand.name + primary keyword + "Coupon Code & Review 2026" |
+| `brand_name` | brand_data.brand.name |
+| `affiliate_url` | brand_data.brand.url (merchant URL, not /go/ redirect) |
+| `slug` | brand_slug from pipeline_input |
+| `colors.*` | brand_data.brand_visual.primary_color_hex (or slug hash fallback via Python helper) |
+| `hero.eyebrow` | Short emoji tagline derived from brand category |
+| `hero.headline_accent` | Always "Discount Code" for coupon LP |
+| `hero.sub` | pain_stack_hook.pivot sentence |
+| `trust_bar.badge` | Best legitimacy_signal, max 25 chars |
+| `coupon.badge_label` | Short emoji offer label |
+| `coupon.deal_title` | "Verified Deal for [Current Month]" |
+| `coupon.deal_sub` | deal_stack.slot_1.offer or coupon.discount_text |
+| `coupon.code` | brand_data.coupon.code (strip "ESTIMATED" suffix if present). Null/placeholder → "AUTO-APPLIED" |
+| `coupon.usage_seed` | Deterministic random 8-30 from brand name |
+| `intro.paragraphs[0]` | pain_stack_hook 3 pains combined into one compelling paragraph |
+| `intro.paragraphs[1]` | brand overview / pivot — how this brand solves those pains |
+| `intro.warning` | Only if logistics.weight_note or data_quality.flags exist. Include title + body. |
+| `verdict.score` | data_quality.overall → "9.0" / "8.5" / "7.5" |
+| `verdict.headline` | verdict.recommendation ("YES", "NO", "WAIT") + context |
+| `verdict.paragraphs` | verdict.body — one-paragraph summary |
+| `verdict.pros` | verdict_pros_cons.pros + material_audit.key_materials + legitimacy_signals (3-4 items) |
+| `verdict.cons` | trustpilot_deep.real_cons + ugly_truth + data_quality.missing_fields (2+ items) |
+| `deals[0]` | deal_stack.slot_1 (main coupon) |
+| `deals[1]` | deal_stack.slot_3 / logistics (shipping offer) |
+| `deals[2]` | deal_stack.slot_2 / hero_product (bundle/product deal, optional) |
+| `review.opening_paragraphs` | material_analysis.body |
+| `review.comparison_table` | review_comparison.truth_table — map headers→columns, rows→rows (append winner badge to winning cell) |
+| `review.extra_sections[0]` | material_analysis (title + paragraphs) |
+| `review.extra_sections[1]` | price_quality (title + paragraphs) |
+| `redeem.step2` | how_to_redeem.steps[1] — code entry instruction |
+| `redeem.step3` | how_to_redeem.steps[2] or "Verify the final price before completing your purchase." |
+| `faq[]` | faq section — question→q, answer→a (minimum 3 items) |
+| `final_cta.headline` | "Ready to Save on {brand_name}?" |
+| `final_cta.sub` | ps_section.text or coupon.discount_text |
+| `final_cta.btn_label` | "Activate Deal Now" or ps_section-derived CTA |
+| `sticky_footer.text` | Best offer summary, max 60 chars |
 
 After saving, output exactly:
 ```

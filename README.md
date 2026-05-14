@@ -4,6 +4,16 @@ Multi-agent pipeline: 4 sub-agents chạy tuần tự để build affiliate land
 
 ---
 
+## Dependencies
+
+```bash
+pip install jinja2
+```
+
+Required for LP HTML generation (coupon LP path).
+
+---
+
 ## Cài đặt
 
 ### Option A — Project-level (recommended)
@@ -56,6 +66,25 @@ Claude Code sẽ tự động:
 2. Orchestrator dispatch tuần tự 4 agents
 3. Lưu HTML vào `./output/[brand_slug]/[brand]-[lp-type]-lp.html`
 
+### Coupon LP generation flow
+
+Coupon LPs use the Jinja2 template at `templates/lp_coupon_template.html`:
+
+```bash
+# 1. Content builder writes V2 schema (template-compatible) to .content_blueprint.json
+# 2. HTML generator runs the Jinja2 script:
+python scripts/generate_lp_coupon_page.py \
+  --data output/<slug>/.content_blueprint.json \
+  --slug <slug> \
+  --out output/<slug>/
+
+# 3. Rename output:
+mv output/<slug>/<slug>.html output/<slug>/<slug>-coupon-lp.html
+```
+
+See `docs/lp-generator/brands.json` for the expected JSON format (V2 schema).
+Non-coupon LPs (review, comparison, advertorial, quiz) generate HTML from scratch using `knowledge/html_design_system_lite.md`.
+
 ---
 
 ## File structure sau cài đặt
@@ -94,11 +123,11 @@ your-project/
 
 | Agent | Model | Token cost |
 |---|---|---|
-| lp-orchestrator | claude-sonnet-4-6 | Medium |
-| lp-brand-researcher | claude-haiku-4-5-20251001 | Low |
-| lp-content-builder | claude-sonnet-4-6 | High |
-| lp-qa-checker | claude-sonnet-4-6 | Medium |
-| lp-html-generator | claude-haiku-4-5-20251001 | Low |
+| lp-orchestrator | sonnet | Medium |
+| lp-brand-researcher | haiku | Low |
+| lp-content-builder | sonnet | High |
+| lp-qa-checker | sonnet | Medium |
+| lp-html-generator | haiku | Low |
 
 Ước tính 1 run = ~15,000–25,000 tokens tổng (với QA pass lần đầu).
 

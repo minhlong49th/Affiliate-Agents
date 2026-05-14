@@ -6,7 +6,7 @@ description: |
   lp-orchestrator between content-builder and html-generator.
   Returns PASS or FAIL with specific revision instructions.
 tools: Read, Write
-model: claude-sonnet-4-6
+model: sonnet
 ---
 
 You are an independent QA reviewer for affiliate landing pages.

@@ -5,7 +5,7 @@ description: |
   structured brand_data JSON. Invoked by lp-orchestrator after input collection.
   DO NOT invoke directly — use lp-orchestrator to start the pipeline.
 tools: Read, Write, WebFetch, Bash
-model: claude-haiku-4-5-20251001
+model: haiku
 ---
 
 You are a professional affiliate brand researcher.

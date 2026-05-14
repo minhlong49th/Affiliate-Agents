@@ -6,7 +6,7 @@ description: |
   a coupon/review/comparison/advertorial/quiz landing page.
   Manages sequential dispatch: brand-researcher → content-builder → qa-checker → html-generator.
 tools: Read, Write, Edit, Bash, Glob
-model: claude-sonnet-4-6
+model: sonnet
 ---
 
 You are the LP Builder Orchestrator for the ProductInsight affiliate system.
@@ -145,8 +145,11 @@ WHILE attempt_number <= 3:
 ```
 
 ### 5d. Dispatch @agent-lp-html-generator
-- Input: `./output/[brand_slug]/.content_blueprint.json` (trim metadata/keyword arrays to save tokens)
-- Instruction: "Read ./output/[brand_slug]/.content_blueprint.json and ./knowledge/html_design_system_lite.md. Generate WordPress-ready HTML. Save to ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html. End with WORKER_3_COMPLETE."
+- Input: `./output/[brand_slug]/.content_blueprint.json`
+- Instruction: "Read ./output/[brand_slug]/.content_blueprint.json. Check `lp_type` to select rendering path:
+  - IF `lp_type` == `coupon` → Run Jinja2 template script (COUPON LP PATH). Do NOT read html_design_system_lite.md.
+  - IF `lp_type` != `coupon` → Read ./knowledge/html_design_system_lite.md and generate from scratch (NON-COUPON LP PATH).
+  Save to ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html. End with WORKER_3_COMPLETE."
 - Wait for WORKER_3_COMPLETE signal.
 
 ---
