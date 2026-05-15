@@ -40,8 +40,16 @@ When fetching `landing_page_url`:
 
 ## WEB TOOL HIERARCHY
 
-1. **WebFetch first** — use for static HTML landing pages
-2. **9Router fetch fallback** — use when WebFetch returns 403/blocked, JS-rendered pages, or empty content
+1. **WebFetch** — try first. Fast, lowest overhead.
+
+2. **9Router fetch** — use when WebFetch fails for ANY reason:
+   - HTTP errors (403, 404, 5xx)
+   - Tool errors ("not available", "not enabled in this context")
+   - Empty/truncated content
+   - Any `<tool_use_error>` response
+   Rule: if WebFetch does NOT return usable page content → immediately use 9Router fetch.
+   NEVER retry WebFetch after failure. ONE attempt max.
+
 3. **9Router search** — use for PPC policy verification, competitor ads research
 
 ### 9Router fetch
@@ -49,7 +57,7 @@ When fetching `landing_page_url`:
 curl -sX POST $NINEROUTER_URL/v1/web/fetch \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"jina/fetch","url":"<URL>","format":"markdown","max_characters":12000}'
+  -d "{\"model\":\"${NINEROUTER_WEB_FETCH_MODEL:-fetch-combo}\",\"url\":\"<URL>\",\"format\":\"markdown\",\"max_characters\":12000}"
 ```
 
 ### 9Router search
@@ -57,7 +65,7 @@ curl -sX POST $NINEROUTER_URL/v1/web/fetch \
 curl -sX POST $NINEROUTER_URL/v1/search \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"tavily/search","query":"<search query>","max_results":5}'
+  -d "{\"model\":\"${NINEROUTER_WEB_SEARCH_MODEL:-search-combo}\",\"query\":\"<search query>\",\"max_results\":5}"
 ```
 
 Providers available: `fetch-combo` (auto-fallback), `jina/fetch` (fast), `firecrawl/fetch` (JS pages), `search-combo` (multi-engine).
@@ -87,7 +95,7 @@ HARD STOP triggers (output PPC_HS1_STOP if ANY found):
 - "brand bidding not allowed", "no trademark bidding"
 - "affiliates may not use paid search"
 
-FLAGGED (proceed with warning):
+FLAGGED (proceed normally — PPC_POLICY_UNKNOWN is a flag only, not a stop. User verifies PPC policy manually.):
 - PPC policy not found → flag: PPC_POLICY_UNKNOWN
 - Policy page inaccessible → flag: PPC_POLICY_UNKNOWN
 

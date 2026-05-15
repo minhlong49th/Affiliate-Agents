@@ -159,19 +159,17 @@ ppc-orchestrator
 |------|---------|----------|--------|
 | HS-1 | Brand bans PPC in affiliate terms | PPC only | Stop PPC. LP can still run. |
 | HS-2 | LP URL unreachable | PPC only | Stop PPC pipeline. |
-| LP-ERR | Affiliate link unverified | LP only | Stop LP pipeline. |
+| LP-ERR | Affiliate link unverified | LP only | REMOVED. No longer stops pipeline. Use check_flags.py. |
 
 ## LP Error / Warnings
 
 | Condition | Action |
 |---|---|
-| `affiliate_url` missing or unverified | STOP. "Affiliate link required. Test in incognito first." |
+| `affiliate_url` missing | Ask user. "Affiliate link may be needed. Provide or skip." |
+| `affiliate_url` unverified | Proceed. Flag in data_quality. User checks manually. |
 | `brand_url` returns 403 | Worker 1 uses network data only. Flag "research limited." |
 | `lp_type=comparison` and no `competitor_brand` | Ask user before proceeding. |
-| `data_quality.flags` includes `AFFILIATE_LINK_UNVERIFIED` | Worker 2 STOPs entire pipeline. |
-| `data_quality.flags` includes `COMMISSION_BELOW_FLOOR` | WARN. "Commission < $8/sale. ROAS unlikely positive." |
-| `data_quality.flags` includes `RATING_BELOW_THRESHOLD` | WARN. "Brand rating < 3.5 stars. Conversion challenges likely." |
-| `data_quality.flags` includes `PPC_POLICY_UNKNOWN` (coupon/review LP) | WARN. "Verify PPC policy before running Google Ads." |
+| `data_quality.flags` contains any flag | IGNORED in normal workflow. Agents never check flags. Run `python scripts/check_flags.py ./output/[brand_slug]/.brand_data.json` to check manually. |
 
 ---
 

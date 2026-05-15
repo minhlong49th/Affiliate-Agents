@@ -34,7 +34,7 @@ IDs end in `/fetch` (e.g. `firecrawl/fetch`, `jina/fetch`). `fetch-combo` chains
 curl -X POST $NINEROUTER_URL/v1/web/fetch \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"jina/fetch","url":"https://9router.com","format":"markdown"}'
+  -d "{\"model\":\"${NINEROUTER_WEB_FETCH_MODEL:-fetch-combo}\",\"url\":\"https://9router.com\",\"format\":\"markdown\"}"
 ```
 
 JS:
@@ -43,7 +43,7 @@ JS:
 const r = await fetch(`${process.env.NINEROUTER_URL}/v1/web/fetch`, {
   method: "POST",
   headers: { "Authorization": `Bearer ${process.env.NINEROUTER_KEY}`, "Content-Type": "application/json" },
-  body: JSON.stringify({ model: "fetch-combo", url: "https://example.com", format: "markdown", max_characters: 5000 }),
+  body: JSON.stringify({ model: process.env.NINEROUTER_WEB_FETCH_MODEL || "fetch-combo", url: "https://example.com", format: "markdown", max_characters: 5000 }),
 });
 const { data } = await r.json();
 console.log(data.title, data.content.length);

@@ -35,7 +35,7 @@ IDs end in `/search` (e.g. `tavily/search`). Combos (`owned_by:"combo"`) chain p
 curl -X POST $NINEROUTER_URL/v1/search \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"tavily/search","query":"9Router open source","max_results":5}'
+  -d "{\"model\":\"${NINEROUTER_WEB_SEARCH_MODEL:-search-combo}\",\"query\":\"9Router open source\",\"max_results\":5}"
 ```
 
 JS:
@@ -44,7 +44,7 @@ JS:
 const r = await fetch(`${process.env.NINEROUTER_URL}/v1/search`, {
   method: "POST",
   headers: { "Authorization": `Bearer ${process.env.NINEROUTER_KEY}`, "Content-Type": "application/json" },
-  body: JSON.stringify({ model: "search-combo", query: "latest LLM benchmarks", max_results: 10 }),
+  body: JSON.stringify({ model: process.env.NINEROUTER_WEB_SEARCH_MODEL || "search-combo", query: "latest LLM benchmarks", max_results: 10 }),
 });
 console.log(await r.json());
 ```

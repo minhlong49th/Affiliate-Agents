@@ -1,7 +1,9 @@
 {
   "env": {
     "NINEROUTER_URL": "http://localhost:20128",
-    "NINEROUTER_KEY": "sk-e88f990ccab8cc2d-48ai20-2fd2120b"
+    "NINEROUTER_KEY": "sk-e88f990ccab8cc2d-48ai20-2fd2120b",
+    "NINEROUTER_WEB_FETCH_MODEL": "fetch-combo",
+    "NINEROUTER_WEB_SEARCH_MODEL": "search-combo"
   },
   "permissions": {
     "allow": [

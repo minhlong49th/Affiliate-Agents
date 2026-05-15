@@ -39,8 +39,16 @@ If brand_url returns 403 or is inaccessible:
 
 ## WEB TOOL HIERARCHY
 
-1. **WebFetch first** — use for static HTML pages, fast, lowest overhead
-2. **9Router fetch fallback** — use when WebFetch returns 403/blocked, JS-rendered pages, or empty content
+1. **WebFetch** — try first. Fast, lowest overhead.
+
+2. **9Router fetch** — use when WebFetch fails for ANY reason:
+   - HTTP errors (403, 404, 5xx)
+   - Tool errors ("not available", "not enabled in this context")
+   - Empty/truncated content
+   - Any `<tool_use_error>` response
+   Rule: if WebFetch does NOT return usable page content → immediately use 9Router fetch.
+   NEVER retry WebFetch after failure. ONE attempt max.
+
 3. **9Router search** — use for open-web research (Trustpilot reviews, competitor data, coupon verification)
 
 ### 9Router fetch
@@ -48,7 +56,7 @@ If brand_url returns 403 or is inaccessible:
 curl -sX POST $NINEROUTER_URL/v1/web/fetch \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"jina/fetch","url":"<URL>","format":"markdown","max_characters":12000}'
+  -d "{\"model\":\"${NINEROUTER_WEB_FETCH_MODEL:-fetch-combo}\",\"url\":\"<URL>\",\"format\":\"markdown\",\"max_characters\":12000}"
 ```
 
 ### 9Router search
@@ -56,7 +64,7 @@ curl -sX POST $NINEROUTER_URL/v1/web/fetch \
 curl -sX POST $NINEROUTER_URL/v1/search \
   -H "Authorization: Bearer $NINEROUTER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"tavily/search","query":"<search query>","max_results":5}'
+  -d "{\"model\":\"${NINEROUTER_WEB_SEARCH_MODEL:-search-combo}\",\"query\":\"<search query>\",\"max_results\":5}"
 ```
 
 Providers available: `fetch-combo` (auto-fallback), `jina/fetch` (fast), `firecrawl/fetch` (JS pages), `search-combo` (multi-engine).
@@ -134,7 +142,7 @@ If Trustpilot/review URL available:
 - Extract exact numerical rating (e.g. 4.7/5) and total review count
 - Find 2 specific real cons/logistics complaints — pull direct quotes if possible
 - Find 2 common praise themes (what happy customers consistently mention)
-- If page inaccessible via WebFetch → retry with 9Router fetch
+- If page inaccessible (WebFetch fails or returns any error) → retry with 9Router fetch
 - If still inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
 
 If no review URL provided:
@@ -174,6 +182,8 @@ If user DID provide coupon_code → set best_public_discount = null (user's code
 | Competitor auto-selected (not user-provided) | COMPETITOR_AUTO_SELECTED |
 
 overall = "high" (all confirmed), "medium" (1–3 missing/estimated), "low" (commission/URL/PPC unknown)
+
+Flags are collected for manual review only. Agents never act on them. Use `python scripts/check_flags.py` to check.
 
 ---
 

@@ -57,22 +57,9 @@ If no qa_result.json exists or no revision_instructions → build full blueprint
 
 ## PRE-FLIGHT CHECKS
 
-Check `data_quality.flags` from brand_data:
-
-```
-IF "AFFILIATE_LINK_UNVERIFIED" in flags:
-  → Output: { "error": "AFFILIATE_LINK_UNVERIFIED", "message": "Cannot build LP. Affiliate link must be confirmed live." }
-  → STOP.
-
-IF "PPC_POLICY_UNKNOWN" in flags AND lp_type IN ["coupon", "review"]:
-  → Add to output.warnings: "PPC policy not confirmed. Verify before running Google Ads."
-
-IF "COMMISSION_BELOW_FLOOR" in flags:
-  → Add to output.warnings: "Commission < $8/sale. ROAS unlikely positive. Consider skipping."
-
-IF "RATING_BELOW_THRESHOLD" in flags:
-  → Add to output.warnings: "Brand rating < 3.5 stars. Conversion challenges likely."
-```
+data_quality.flags are IGNORED. Build content unconditionally.
+Do not check AFFILIATE_LINK_UNVERIFIED, COMMISSION_BELOW_FLOOR, RATING_BELOW_THRESHOLD, or PPC_POLICY_UNKNOWN.
+Proceed directly to CONTENT GENERATION RULES.
 
 ---
 

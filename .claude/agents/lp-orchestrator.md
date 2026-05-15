@@ -104,11 +104,12 @@ Write this to `./output/[brand_slug]/.pipeline_input.json`:
 
 ## STEP 5 — RUN PIPELINE (sequential, not parallel)
 
+**data_quality.flags are IGNORED. Never stop pipeline based on flags. Proceed unconditionally.**
+
 ### 5a. Dispatch @agent-lp-brand-researcher
 - Input: contents of `./output/[brand_slug]/.pipeline_input.json`
 - Instruction: "Read ./output/[brand_slug]/.pipeline_input.json. Research the brand and produce brand_data JSON. Save output to ./output/[brand_slug]/.brand_data.json. End with WORKER_1_COMPLETE."
 - Wait for WORKER_1_COMPLETE signal before proceeding.
-- If Worker 1 returns AFFILIATE_LINK_UNVERIFIED → STOP, report to user.
 
 ### 5b. Dispatch @agent-lp-content-builder
 - Input: `./output/[brand_slug]/.brand_data.json` + keyword_list + lp_type
@@ -193,8 +194,11 @@ DEPLOY QA — before connecting Google Ads:
 ## ERROR HANDLING
 
 ```
-IF affiliate_url missing or unverified:
-  → STOP. "Affiliate link required. Test it in incognito first, then re-run."
+IF affiliate_url missing:
+  → Ask user. "Affiliate link may be needed. Provide or skip."
+
+IF affiliate_url unverified:
+  → Proceed. Flag stored in data_quality.flags. User checks manually.
 
 IF brand_url returns 403:
   → Worker 1 uses network listing data only.
