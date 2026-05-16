@@ -173,7 +173,7 @@ If user DID provide `coupon_code` → set `best_public_discount = null`.
 
 ## OUTPUT
 
-Save this exact JSON structure to `./output/[brand_slug]/.brand_data.json` using `write_to_file`.
+Save this exact JSON structure to `./output/[brand_slug]/.lp_brand_data.json` using `write_to_file`.
 No prose. No explanation. Only JSON. Use `null` for missing data.
 
 ```json

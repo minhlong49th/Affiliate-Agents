@@ -15,7 +15,7 @@ Output structured JSON only.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.brand_data.json` — keyword signals and ad group types
+- `./output/[brand_slug]/.ppc_brand_data.json` — keyword signals and ad group types
 - `./output/[brand_slug]/.pipeline_input.json` — target_keyword, geo, brand_slug
 
 ---

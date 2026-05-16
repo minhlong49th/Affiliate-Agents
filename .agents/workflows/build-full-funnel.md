@@ -66,6 +66,23 @@ Detect lp_type from user input:
 Normalize keyword_list to array regardless of format (comma, bullets, JSON).
 Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 
+### Step 3.5 — Research Cache Check
+
+Before running LP Worker 1, check if brand data already exists:
+
+```
+IF ./output/[brand_slug]/.lp_brand_data.json EXISTS:
+  Check file age: (current_time - file_modified_time) in hours
+  IF age < 168 (7 days):
+    CACHE HIT → skip LP Worker 1
+    Log: "CACHE HIT — reusing lp_brand_data.json for [brand_slug] (age: Xh)"
+    Proceed directly to Step 5 (Content Blueprint)
+  ELSE:
+    CACHE MISS → run LP Worker 1 (file too old)
+ELSE:
+  CACHE MISS → run LP Worker 1 (no existing data)
+```
+
 ### Step 4 — Brand Research (LP Worker 1)
 
 Run LP Worker 1 from lp-builder-agent skill.

@@ -77,7 +77,7 @@ none of the above                                               → coupon (defa
 
 ### LP Context-passing protocol
 - Orchestrator → `./output/[brand_slug]/.pipeline_input.json`
-- Worker 1 → `./output/[brand_slug]/.brand_data.json`
+- Worker 1 → `./output/[brand_slug]/.lp_brand_data.json`
 - Worker 2 → `./output/[brand_slug]/.content_blueprint.json`
 - Worker 4 (QA) → `./output/[brand_slug]/.qa_result.json`
 - Worker 3 → `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
@@ -114,7 +114,7 @@ ppc-orchestrator
 
 ### PPC Context-passing protocol
 - Orchestrator → `./output/[brand_slug]/.pipeline_input.json`
-- Worker 1 → `./output/[brand_slug]/.brand_data.json`
+- Worker 1 → `./output/[brand_slug]/.ppc_brand_data.json`
 - Worker 2 → `./output/[brand_slug]/.keyword_sets.json`
 - Worker 3 → `./output/[brand_slug]/.ad_copy_draft.json`
 - Worker 4 (QA) → `./output/[brand_slug]/.qa_result.json`
@@ -169,7 +169,7 @@ ppc-orchestrator
 | `affiliate_url` unverified | Proceed. Flag in data_quality. User checks manually. |
 | `brand_url` returns 403 | Worker 1 uses network data only. Flag "research limited." |
 | `lp_type=comparison` and no `competitor_brand` | Ask user before proceeding. |
-| `data_quality.flags` contains any flag | IGNORED in normal workflow. Agents never check flags. Run `python scripts/check_flags.py ./output/[brand_slug]/.brand_data.json` to check manually. |
+| `data_quality.flags` contains any flag | IGNORED in normal workflow. Agents never check flags. Run `python scripts/check_flags.py ./output/[brand_slug]/.lp_brand_data.json` to check manually. |
 
 ---
 

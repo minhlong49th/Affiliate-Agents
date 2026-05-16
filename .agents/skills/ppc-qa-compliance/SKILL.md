@@ -17,7 +17,7 @@ Output structured JSON only.
 Use `view_file` to read:
 - `./output/[brand_slug]/.ad_copy_draft.json` — draft to review
 - `./output/[brand_slug]/.keyword_sets.json` — keyword sets
-- `./output/[brand_slug]/.brand_data.json` — factual truth
+- `./output/[brand_slug]/.ppc_brand_data.json` — factual truth
 - `./output/[brand_slug]/.pipeline_input.json` — mode, brand_slug
 
 ---

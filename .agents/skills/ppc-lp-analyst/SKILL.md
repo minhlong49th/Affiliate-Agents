@@ -83,7 +83,9 @@ From `search_web` (affiliate program data):
 
 ## TASK 2 — HS-1 PPC POLICY CHECK
 
-Run this check now (orchestrator may have already run it; run again as double-check).
+**Skip this task if `full_funnel_cache = true`** — hard stop was already verified by the LP orchestrator.
+
+Otherwise, run this check now (orchestrator may have already run it; run again as double-check).
 
 ### Forbidden categories → FULL STOP:
 ```
@@ -143,7 +145,7 @@ From LP + brand content, identify:
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.brand_data.json` using `write_to_file`:
+Save to `./output/[brand_slug]/.ppc_brand_data.json` using `write_to_file`:
 
 ```json
 {

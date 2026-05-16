@@ -15,7 +15,7 @@ Output files via `write_to_file`.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.brand_data.json`
+- `./output/[brand_slug]/.ppc_brand_data.json`
 - `./output/[brand_slug]/.keyword_sets.json`
 - `./output/[brand_slug]/.ad_copy_draft.json`
 - `./output/[brand_slug]/.qa_result.json`

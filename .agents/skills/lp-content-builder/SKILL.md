@@ -32,7 +32,7 @@ For coupon LP, write as **Edward** — Senior Product Quality Analyst, Material 
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.brand_data.json` — all brand research data
+- `./output/[brand_slug]/.lp_brand_data.json` — all brand research data
 - `./output/[brand_slug]/.pipeline_input.json` — lp_type, keyword_list, brand_slug
 - `./knowledge/lp_framework_base.md` — base rules
 - `./knowledge/lp_framework_[lp_type].md` — LP-type-specific rules

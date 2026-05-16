@@ -41,11 +41,30 @@ Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 
 ---
 
+### Step 2.5 — Research Cache Check
+
+Before running Worker 1, check if brand data already exists:
+
+```
+IF ./output/[brand_slug]/.lp_brand_data.json EXISTS:
+  Check file age: (current_time - file_modified_time) in hours
+  IF age < 168 (7 days):
+    CACHE HIT → skip Worker 1
+    Log: "CACHE HIT — reusing lp_brand_data.json for [brand_slug] (age: Xh)"
+    Proceed directly to Step 4 (Content Blueprint)
+  ELSE:
+    CACHE MISS → run Worker 1 (file too old)
+ELSE:
+  CACHE MISS → run Worker 1 (no existing data)
+```
+
+---
+
 ### Step 3 — Brand Research (Worker 1)
 
 Run Worker 1 from lp-builder-agent skill.
 - Input: all collected fields + keyword_list
-- Output: brand_data JSON → ./output/[brand_slug]/.brand_data.json
+- Output: lp_brand_data.json → ./output/[brand_slug]/.lp_brand_data.json
 - If brand_url returns 403 → proceed with network listing data only, flag it in report
 
 ---

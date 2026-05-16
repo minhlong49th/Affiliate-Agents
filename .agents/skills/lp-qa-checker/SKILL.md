@@ -15,7 +15,7 @@ Score it critically, not charitably. Your job is to catch what the author missed
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.brand_data.json` — ground truth for factual claims
+- `./output/[brand_slug]/.lp_brand_data.json` — ground truth for factual claims
 - `./output/[brand_slug]/.content_blueprint.json` — blueprint to score
 - `./output/[brand_slug]/.pipeline_input.json` — for lp_type, attempt_number, brand_slug
 - `./knowledge/lp_framework_base.md` — base framework rules

@@ -81,14 +81,14 @@ Proceed to Step 4.
 Before running Worker 1, check if brand data already exists:
 
 ```
-IF ./output/[brand_slug]/.brand_data.json EXISTS:
+IF ./output/[brand_slug]/.ppc_brand_data.json EXISTS:
   Check file age: (current_time - file_modified_time) in hours
-  IF age < 168 (7 days) AND file contains "lp_analysis" OR "brand_data" key:
+  IF age < 168 (7 days):
     CACHE HIT → skip Worker 1
-    Log: "CACHE HIT — reusing brand_data.json for [brand_slug] (age: Xh)"
+    Log: "CACHE HIT — reusing ppc_brand_data.json for [brand_slug] (age: Xh)"
     Proceed directly to Step 5
   ELSE:
-    CACHE MISS → run Worker 1 (file too old or incomplete)
+    CACHE MISS → run Worker 1 (file too old)
 ELSE:
   CACHE MISS → run Worker 1 (no existing data)
 ```
@@ -97,7 +97,7 @@ ELSE:
  
 Run Worker 1 from ppc-affiliate-pipeline skill.
 - Input: all collected fields
-- Output: `brand_data.json` → `./output/[brand_slug]/.brand_data.json`
+- Output: `ppc_brand_data.json` → `./output/[brand_slug]/.ppc_brand_data.json`
 - If `landing_page_url` returns 404 → use `brand_url` as substitute for analysis only, flag it
 ---
  
@@ -128,7 +128,7 @@ Run Worker 4 from ppc-affiliate-pipeline skill.
  
 Run Worker 5 from ppc-affiliate-pipeline skill.
 - Input: `ad_copy_draft.json` + `keyword_sets.json` + `qa_result.json` + `brand_data.json`
-- Output (save to `production_artifacts/[brand_slug]/`):
+- Output (save to `./output/[brand_slug]/`):
   - `[brand-slug]-campaign-brief.md`
   - `[brand-slug]-google-ads.csv`
   - `[brand-slug]-bing-ads.csv`
@@ -152,9 +152,9 @@ QA RESULT: [PASS / FORCE-PASSED]
   Approved groups: [N]   Flagged: [N]
  
 OUTPUT FILES:
-  📄 Brief:      production_artifacts/[brand_slug]/[brand-slug]-campaign-brief.md
-  📊 Google CSV: production_artifacts/[brand_slug]/[brand-slug]-google-ads.csv
-  📊 Bing CSV:   production_artifacts/[brand_slug]/[brand-slug]-bing-ads.csv
+  📄 Brief:      ./output/[brand_slug]/[brand-slug]-campaign-brief.md
+  📊 Google CSV: ./output/[brand_slug]/[brand-slug]-google-ads.csv
+  📊 Bing CSV:   ./output/[brand_slug]/[brand-slug]-bing-ads.csv
 ─────────────────────────────────
 PRE-LAUNCH CHECKLIST:
 □ Verify affiliate PPC policy allows brand keyword bidding
@@ -173,7 +173,7 @@ PRE-LAUNCH CHECKLIST:
 ## Rules of Engagement
  
 - **Hard stops run first, always** — HS-1 and HS-2 execute before any worker
-- **Save Location:** intermediate JSON → `output/[brand_slug]/` | final outputs → `production_artifacts/[brand_slug]/`
+- **Save Location:** All intermediate JSON + all final outputs → `./output/[brand_slug]/`
 - **QA retry cap:** max 1 retry per failing ad group, then force-pass with `[NEEDS_MANUAL_REVIEW]` tag
 - **Batch resilience:** one brand failing never halts the rest — log and continue
 - **Kill/scale mode is read-only:** no keywords or ad copy generated, optimization report only
