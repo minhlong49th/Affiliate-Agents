@@ -1,6 +1,7 @@
 ---
 name: lp-content-builder
 description: Worker 2 in the LP builder pipeline. Reads brand_data JSON and produces a complete LP content blueprint. Also handles revision patching when called back by the QA checker. Read this skill when executing the content blueprint phase of the LP pipeline. Do NOT use directly — invoked by lp-affiliate-pipeline.
+model: claude-opus-4.6-thinking # PSBCU/PAS copywriting, Edward persona, revision branching, large schema — needs top creative + reasoning
 ---
 
 # LP Content Builder — Antigravity Worker 2

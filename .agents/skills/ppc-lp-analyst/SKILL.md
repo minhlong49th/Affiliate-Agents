@@ -1,6 +1,7 @@
 ---
 name: ppc-lp-analyst
 description: PPC Worker 1. Fetches and analyzes the landing page and brand site to extract PPC campaign data. Checks hard-stop conditions. Read this skill during the LP analysis phase of the PPC pipeline. Do NOT use directly — invoked by ppc-affiliate-pipeline.
+model: gemini-3.1-pro-low # Web fetch + HS-1 compliance check + ad group selection — moderate reasoning, no heavy creativity needed
 ---
 
 # PPC LP Analyst — Antigravity PPC Worker 1

@@ -1,6 +1,7 @@
 ---
 name: ppc-keyword-builder
 description: PPC Worker 2. Generates high-intent keyword sets and negative keywords for Google and Bing Ads campaigns. Read this skill during the keyword generation phase of the PPC pipeline. Do NOT use directly — invoked by ppc-affiliate-pipeline.
+model: gemini-3-flash # Pattern-based keyword expansion with clear formulas — structured task, optimize for speed and cost
 ---
 
 # PPC Keyword Builder — Antigravity PPC Worker 2

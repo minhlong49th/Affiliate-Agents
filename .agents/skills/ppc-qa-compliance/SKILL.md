@@ -1,6 +1,7 @@
 ---
 name: ppc-qa-compliance
 description: PPC Worker 4. Validates ad copy against platform policies and campaign strategy. Also handles Kill/Scale analysis. Read this skill during the QA phase of the PPC pipeline. Do NOT use directly — invoked by ppc-affiliate-pipeline.
+model: gemini-3-flash # Rule-based compliance (5 criteria) + Kill/Scale decision matrix — pure deterministic logic, Flash is sufficient
 ---
 
 # PPC QA Compliance — Antigravity PPC Worker 4

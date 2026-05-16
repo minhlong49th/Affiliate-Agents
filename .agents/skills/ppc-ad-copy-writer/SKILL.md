@@ -1,6 +1,7 @@
 ---
 name: ppc-ad-copy-writer
 description: PPC Worker 3. Writes Responsive Search Ads (RSA) for Google and Bing Ads. Read this skill during the ad copy writing phase of the PPC pipeline. Do NOT use directly — invoked by ppc-affiliate-pipeline.
+model: claude-sonnet-4.6-thinking # RSA copywriting: 30-char headlines, direct-response creativity, 15 headlines + 4 descs per group — needs creative + constraint reasoning
 ---
 
 # PPC Ad Copy Writer — Antigravity PPC Worker 3

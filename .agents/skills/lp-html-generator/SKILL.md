@@ -1,6 +1,7 @@
 ---
 name: lp-html-generator
 description: Worker 3 (final step) in the LP builder pipeline. For coupon LPs, renders HTML via the Jinja2 template script using run_command. For non-coupon LPs, generates HTML from scratch using the design system. Read this skill when executing the HTML generation phase. Do NOT use directly — invoked by lp-affiliate-pipeline.
+model: gemini-3-flash # Script execution + schema-to-HTML rendering; structured task, no deep reasoning needed — optimize for speed
 ---
 
 # LP HTML Generator — Antigravity Worker 3

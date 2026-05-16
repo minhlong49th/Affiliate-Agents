@@ -1,6 +1,7 @@
 ---
 name: ppc-output-exporter
 description: PPC Worker 5. Generates final campaign briefs and CSV import files for Google and Bing Ads. Read this skill during the export phase of the PPC pipeline. Do NOT use directly — invoked by ppc-affiliate-pipeline.
+model: gemini-3-flash # Pure data formatting: JSON → MD brief + 2 CSVs; no reasoning needed — maximum speed and cost efficiency
 ---
 
 # PPC Output Exporter — Antigravity PPC Worker 5

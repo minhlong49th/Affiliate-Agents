@@ -1,6 +1,7 @@
 ---
 name: lp-brand-researcher
 description: Worker 1 in the LP builder pipeline. Researches a brand and outputs structured brand_data JSON. Read this skill when executing the LP pipeline brand research phase. Do NOT use this skill directly — it is invoked by lp-affiliate-pipeline.
+model: gemini-3.1-pro-high # 11 research tasks, web fetch + triangulation, data quality flags — needs deepest reasoning
 ---
 
 # LP Brand Researcher — Antigravity Worker 1

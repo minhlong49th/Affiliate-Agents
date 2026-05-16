@@ -1,6 +1,7 @@
 ---
 name: lp-qa-checker
 description: Worker 4 (QA) in the LP builder pipeline. Scores the content blueprint against factual accuracy and framework compliance rubrics. Read this skill when executing the QA phase of the LP pipeline. Returns PASS or FAIL with revision instructions. Do NOT use directly — invoked by lp-affiliate-pipeline.
+model: claude-sonnet-4.6-thinking # Dual rubric (14 criteria), factual cross-referencing, precise revision instructions — needs analytical thinking
 ---
 
 # LP QA Checker — Antigravity Worker 4
