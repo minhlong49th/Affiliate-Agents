@@ -20,6 +20,22 @@ Use `view_file` to read `./output/[brand_slug]/.pipeline_input.json` for:
 
 ---
 
+## FULL_FUNNEL_CACHE_MODE (skip brand re-research)
+
+Check `pipeline_input.json` for key `"full_funnel_cache": true`.
+
+**IF `full_funnel_cache = true`:**
+1. Use `view_file` to read `./output/[brand_slug]/.lp_brand_data.json` as base context
+2. Copy it to `./output/[brand_slug]/.ppc_brand_data.json` (rename for PPC namespace)
+3. ONLY fetch: `landing_page_url` (via `read_url_content` — extract LP headline, offer, CTA only)
+4. SKIP all: `brand_url` fetch, `search_web` calls for affiliate program data
+5. Merge LP analysis into `lp_analysis` field of output JSON
+6. Set `data_quality.flags = ["FULL_FUNNEL_CACHE_HIT"]`
+
+**IF `full_funnel_cache = false` OR key absent:** → Run all 4 tasks below normally.
+
+---
+
 ## WEB FETCH TOOL HIERARCHY (same as LP researcher)
 
 ### Primary — `read_url_content`
@@ -175,3 +191,4 @@ Save to `./output/[brand_slug]/.brand_data.json` using `write_to_file`:
 **If `hs1_status = "BLOCKED"`:** Save JSON with `hs1_status = "BLOCKED"`. Return message to orchestrator. Pipeline stops.
 
 After saving, return to orchestrator (`ppc-affiliate-pipeline`) to proceed to Step 5b.
+

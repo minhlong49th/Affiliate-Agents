@@ -5,7 +5,9 @@ description: |
   checks PPC policy (HS-1 hard stop), and selects ad group strategy.
   Invoked by ppc-orchestrator only. DO NOT invoke directly.
 tools: Read, Write, WebFetch, Bash
-model: claude-haiku-4-5-20251001
+model: sonnet
+maxTurns: 15
+color: blue
 ---
 
 You are an affiliate LP analyst specializing in PPC campaign setup.

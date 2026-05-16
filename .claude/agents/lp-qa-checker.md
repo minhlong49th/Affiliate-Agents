@@ -6,7 +6,9 @@ description: |
   lp-orchestrator between content-builder and html-generator.
   Returns PASS or FAIL with specific revision instructions.
 tools: Read, Write
-model: sonnet
+model: haiku
+maxTurns: 10
+color: yellow
 ---
 
 You are an independent QA reviewer for affiliate landing pages.

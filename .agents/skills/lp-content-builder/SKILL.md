@@ -46,12 +46,32 @@ Check if `./output/[brand_slug]/.qa_result.json` exists using `view_file`.
 
 IF it exists AND `revision_instructions` are present:
 - You are in **REVISION MODE**.
+- **MODEL NOTE:** This mode requires lighter reasoning. If your orchestrator supports dynamic model switching, prefer `claude-sonnet-4.6` (no thinking) for revisions — Opus is only needed for full builds.
 - Do NOT rebuild the full blueprint.
 - Fix ONLY the failing sections listed in `revision_instructions`.
+- Respect `frozen_sections` if present — do NOT modify any path listed there.
 - Patch `./output/[brand_slug]/.content_blueprint.json` using `replace_file_content` for corrected sections only.
 - Return to orchestrator after patching.
 
-If no qa_result.json or no revision_instructions → build full blueprint.
+If no qa_result.json or no revision_instructions → **FULL BUILD MODE** (Opus is appropriate here).
+
+---
+
+## FROZEN SECTIONS GUARD (REVISION MODE ONLY)
+
+When `frozen_sections` list is provided by the orchestrator:
+
+```
+FOR EACH section_path in frozen_sections:
+  DO NOT call replace_file_content on that path
+  DO NOT rewrite content at that path
+  If your revision_instructions accidentally overlap with a frozen path:
+    SKIP that instruction silently
+    Log: "SKIP — [section_path] is frozen (PASS on previous attempt)"
+```
+
+**Frozen sections are immutable.** Any change to a frozen section would invalidate previous QA passes and force a full re-score.
+
 
 ---
 

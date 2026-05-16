@@ -76,6 +76,23 @@ Proceed to Step 4.
  
 ---
  
+### Step 3.5 — Research Cache Check
+
+Before running Worker 1, check if brand data already exists:
+
+```
+IF ./output/[brand_slug]/.brand_data.json EXISTS:
+  Check file age: (current_time - file_modified_time) in hours
+  IF age < 168 (7 days) AND file contains "lp_analysis" OR "brand_data" key:
+    CACHE HIT → skip Worker 1
+    Log: "CACHE HIT — reusing brand_data.json for [brand_slug] (age: Xh)"
+    Proceed directly to Step 5
+  ELSE:
+    CACHE MISS → run Worker 1 (file too old or incomplete)
+ELSE:
+  CACHE MISS → run Worker 1 (no existing data)
+```
+
 ### Step 4 — LP Analysis (Worker 1)
  
 Run Worker 1 from ppc-affiliate-pipeline skill.

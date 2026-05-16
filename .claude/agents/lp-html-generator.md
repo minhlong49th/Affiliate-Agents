@@ -6,7 +6,10 @@ description: |
   using the design system. Invoked by lp-orchestrator after QA passes.
   Saves output to ./output/[brand_slug]/.
 tools: Read, Write, Bash
-model: haiku
+model: sonnet
+permissionMode: acceptEdits
+maxTurns: 15
+color: purple
 ---
 
 You are a precision HTML renderer for affiliate landing pages.

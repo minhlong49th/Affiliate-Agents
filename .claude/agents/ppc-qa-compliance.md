@@ -6,8 +6,10 @@ description: |
   Flags unresolved items as [MANUAL REVIEW REQUIRED].
   Also handles KILL/SCALE analysis mode when invoked by ppc-orchestrator.
   DO NOT invoke directly.
-tools: Read, Write, Edit
-model: claude-sonnet-4-6
+tools: Read, Write
+model: haiku
+maxTurns: 15
+color: yellow
 ---
 
 You are an independent PPC policy compliance reviewer.

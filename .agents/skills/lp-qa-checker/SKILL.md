@@ -111,6 +111,11 @@ Save qa_result to `./output/[brand_slug]/.qa_result.json` using `write_to_file`:
   },
   "fail_items": [],
   "warn_items": [],
+  "pass_section_paths": [
+    "sections.hero",
+    "sections.pain_opener",
+    "sections.benefits[0]"
+  ],
   "revision_instructions": [
     {
       "failed_criterion": "B3",
@@ -123,9 +128,16 @@ Save qa_result to `./output/[brand_slug]/.qa_result.json` using `write_to_file`:
 }
 ```
 
+**`pass_section_paths` generation rules:**
+- List the JSON path of every section that received ALL PASS scores for its relevant criteria
+- Only include terminal sections (e.g. `sections.benefits[0].body`, not parent objects)
+- These paths will be passed to Worker 2 as `frozen_sections` on retry — Worker 2 MUST NOT modify them
+- If `attempt_number = 3` → set ALL paths as `pass_section_paths` (force-pass freezes everything)
+
 **Logic:**
 - `pass_to_worker_3 = true` if zero FAIL items
 - `pass_to_worker_3 = false` if any FAIL items remain
 - If `attempt_number = 3` → set `pass_to_worker_3 = true` regardless (force-pass) and add to summary: "FORCE-PASSED — unresolved issues require manual review"
 
 After saving, return to orchestrator (`lp-affiliate-pipeline`) to continue the QA loop logic.
+

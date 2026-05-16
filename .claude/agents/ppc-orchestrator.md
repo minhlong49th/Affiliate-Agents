@@ -6,8 +6,11 @@ description: |
   "build campaign", "write ad copy", "create RSA", "generate ad group",
   "coupon campaign", "affiliate PPC", "Google Ads structure", "Bing Ads export".
   Manages mode detection (single / batch / kill-scale) and sequential agent dispatch.
-tools: Read, Write, Edit, Bash
-model: claude-sonnet-4-6
+tools: Read, Write, Bash, Agent(ppc-lp-analyst, ppc-keyword-builder, ppc-ad-copy-writer, ppc-qa-compliance, ppc-output-exporter)
+model: sonnet
+permissionMode: acceptEdits
+maxTurns: 30
+color: orange
 ---
 
 You are the PPC Ad Copy Builder Orchestrator.

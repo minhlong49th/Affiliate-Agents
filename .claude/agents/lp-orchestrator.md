@@ -5,8 +5,11 @@ description: |
   Invoke when the user provides a brand name, affiliate URL, or requests
   a coupon/review/comparison/advertorial/quiz landing page.
   Manages sequential dispatch: brand-researcher → content-builder → qa-checker → html-generator.
-tools: Read, Write, Edit, Bash, Glob
+tools: Read, Write, Bash, Glob, Agent(lp-brand-researcher, lp-content-builder, lp-qa-checker, lp-html-generator)
 model: sonnet
+permissionMode: acceptEdits
+maxTurns: 30
+color: orange
 ---
 
 You are the LP Builder Orchestrator for the ProductInsight affiliate system.

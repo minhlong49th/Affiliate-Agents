@@ -87,18 +87,25 @@ attempt = 1
 WHILE attempt ≤ 3:
   Score content_blueprint → write .lp_qa_result.json
   IF pass_to_worker_3 = true → break, go to Step 7
-  IF attempt < 3 → send revision_instructions to LP Worker 2 → re-run Step 5
+  IF attempt < 3:
+    Extract `pass_section_paths` from .lp_qa_result.json
+    Send to LP Worker 2:
+      - `revision_instructions` (what to fix)
+      - `frozen_sections` = pass_section_paths (what NOT to touch)
+    Re-run Step 5 (LP Worker 2 in REVISION MODE — surgical patch only)
   IF attempt = 3 AND still FAIL → force-pass, document issues → go to Step 7
   attempt += 1
 
 RULE: data_quality flags never halt the pipeline. Proceed unconditionally.
+RULE: frozen_sections enforcement — LP Worker 2 MUST NOT modify any path in frozen_sections.
 
 ### Step 7 — HTML Generation (LP Worker 3)
 
 Run LP Worker 3 from lp-builder-agent skill.
 - Input: QA-approved (or force-passed) content_blueprint.json
-- Output: production_artifacts/[brand_slug]/[brand-slug]-[lp-type]-lp.html
-- All HTML wrapped in <div class="claude-lp-wrapper"> with fully scoped CSS
+- Output: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+- All HTML wrapped in `<div class="claude-lp-wrapper">` with fully scoped CSS
+- **NOTE:** All final outputs live in `./output/[brand_slug]/` — do NOT use `production_artifacts/`
 
 ### Step 8 — LP Phase Summary
 
@@ -108,7 +115,7 @@ LP PHASE COMPLETE
 ─────────────────────────────────
 Brand:      [brand_name]
 LP Type:    [lp_type]
-Output:     production_artifacts/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+Output:     ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 Primary KW: [target_keyword]
 LP QA:      [PASS / FORCE-PASSED after N attempts]
 ─────────────────────────────────
@@ -120,12 +127,29 @@ Set landing_page_url = path of HTML file output above.
 
 ## PHASE 2 — BUILD PPC CAMPAIGN
 
+### Step 8.5 — Research Cache Check (LP→PPC Handoff)
+
+In Full Funnel mode, LP Phase has already produced brand research. Before invoking PPC-W1:
+
+**Action: Update `./output/[brand_slug]/.pipeline_input.json`** — add these fields:
+```json
+{
+  "full_funnel_cache": true,
+  "lp_brand_data_path": "./output/[brand_slug]/.lp_brand_data.json",
+  "landing_page_url": "./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html"
+}
+```
+
+Then log: `"CACHE HIT (Full Funnel) — LP brand_data will be reused for PPC phase"`
+
 ### Step 9 — LP Analysis (PPC Worker 1)
 
 Run PPC Worker 1 from ppc-affiliate-pipeline skill.
-- Input: all collected fields + landing_page_url from Step 7
+- Input: all collected fields + `landing_page_url` from Step 7 + **lp_brand_data.json as base context**
 - LP URL check: SKIP (LP was just built and verified in Phase 1)
-- Output: ppc_brand_data.json → ./output/[brand_slug]/.ppc_brand_data.json
+- Brand URL fetch: SKIP (reuse lp_brand_data.json — already researched)
+- Only task: fetch and parse `landing_page_url` to extract LP headline, offer, CTA
+- Output: `ppc_brand_data.json` → `./output/[brand_slug]/.ppc_brand_data.json`
 
 ### Step 10 — Keyword Generation (PPC Worker 2)
 
@@ -151,10 +175,10 @@ Run PPC Worker 4 from ppc-affiliate-pipeline skill.
 
 Run PPC Worker 5 from ppc-affiliate-pipeline skill.
 - Input: ad_copy_draft.json + keyword_sets.json + ppc_qa_result.json + ppc_brand_data.json
-- Output saved to production_artifacts/[brand_slug]/:
-  - [brand-slug]-campaign-brief.md
-  - [brand-slug]-google-ads.csv
-  - [brand-slug]-bing-ads.csv
+- Output (save to `./output/[brand_slug]/`):
+  - `[brand-slug]-campaign-brief.md`
+  - `[brand-slug]-google-ads.csv`
+  - `[brand-slug]-bing-ads.csv`
 
 ---
 
@@ -169,7 +193,7 @@ LP Type:  [lp_type]
 
 LP OUTPUT
 ─────────────────────────────────
-File:     production_artifacts/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+File:     ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 QA:       [PASS / FORCE-PASSED after N attempts]
 Keywords: [count] — [list joined by " · "]
 
@@ -182,9 +206,9 @@ Keywords:     [count] total
 PPC QA:       [PASS / FORCE-PASSED]
   Approved: [N]   Flagged: [N]
 Files:
-  Brief:      production_artifacts/[brand_slug]/[brand-slug]-campaign-brief.md
-  Google CSV: production_artifacts/[brand_slug]/[brand-slug]-google-ads.csv
-  Bing CSV:   production_artifacts/[brand_slug]/[brand-slug]-bing-ads.csv
+  Brief:      ./output/[brand_slug]/[brand-slug]-campaign-brief.md
+  Google CSV: ./output/[brand_slug]/[brand-slug]-google-ads.csv
+  Bing CSV:   ./output/[brand_slug]/[brand-slug]-bing-ads.csv
 ═════════════════════════════════════
 BROWSER QA (after pasting LP into WordPress):
 □ Reveal button → brand site opens in new tab
@@ -212,7 +236,7 @@ DEPLOY QA (before connecting Google Ads):
 ## Rules of Engagement
 
 - Hard Stop (Step 2) runs before any worker — forbidden category = full stop for both phases
-- Save Location: intermediate JSON → output/[brand_slug]/ | final files → production_artifacts/[brand_slug]/
+- All outputs (intermediate JSON + final HTML + CSV) → `./output/[brand_slug]/`
 - Only 1 approval gate: missing competitor_brand on comparison LP (Step 1)
 - Phase 1 output (LP HTML path) is automatically passed as landing_page_url to Phase 2 — user does not need to provide it
 - LP QA retry cap: 3 attempts | PPC QA retry cap: 1 attempt per ad group

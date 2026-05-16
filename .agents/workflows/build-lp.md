@@ -66,11 +66,17 @@ attempt = 1
 WHILE attempt ≤ 3:
   Score content_blueprint → write .qa_result.json
   IF pass_to_worker_3 = true → break, go to Step 6
-  IF attempt < 3 → send revision_instructions to Worker 2 → re-run Step 4
+  IF attempt < 3:
+    Extract `pass_section_paths` from .qa_result.json
+    Send to Worker 2:
+      - `revision_instructions` (what to fix)
+      - `frozen_sections` = pass_section_paths (what NOT to touch)
+    Re-run Step 4 (Worker 2 in REVISION MODE — surgical patch only)
   IF attempt = 3 AND still FAIL → force-pass, document all issues → go to Step 6
   attempt += 1
 
 RULE: data_quality flags never halt the pipeline. Proceed unconditionally.
+RULE: frozen_sections enforcement — Worker 2 MUST NOT modify any path in frozen_sections.
 
 ---
 
@@ -78,14 +84,13 @@ RULE: data_quality flags never halt the pipeline. Proceed unconditionally.
 
 Run Worker 3 from lp-builder-agent skill.
 - Input: QA-approved (or force-passed) content_blueprint.json
-- Output: ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
-- All HTML wrapped in <div class="claude-lp-wrapper"> with fully scoped CSS
+- Output: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+- All HTML wrapped in `<div class="claude-lp-wrapper">` with fully scoped CSS
+- **NOTE:** All final outputs live in `./output/[brand_slug]/` — do NOT use `production_artifacts/`
 
 ---
 
 ### Step 7 — Output Report
-
-Save final file to: production_artifacts/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 
 Print this report:
 
@@ -93,7 +98,7 @@ LP BUILD COMPLETE
 ─────────────────────────────────
 Brand:       [brand_name]
 LP Type:     [lp_type]
-Output:      production_artifacts/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+Output:      ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
 Primary KW:  [target_keyword]
 Keywords:    [count] — [list joined by " · "]
 QA Result:   [PASS / FORCE-PASSED after N attempts]
@@ -119,7 +124,7 @@ DEPLOY QA (before connecting Google Ads):
 ## Rules of Engagement
 
 - Each step's JSON output is the next step's input — never skip a handoff
-- Intermediate JSON → output/[brand_slug]/  |  Final HTML → production_artifacts/[brand_slug]/
+- All outputs (intermediate JSON + final HTML) → `./output/[brand_slug]/`
 - Only 1 approval gate: missing competitor_brand on comparison LP
 - QA retry max 3 attempts → force-pass with documented issues if still failing
 - Every flag, skip, or force-pass must appear in the output report — no silent failures
@@ -130,4 +135,4 @@ DEPLOY QA (before connecting Google Ads):
 
 If user says "LP + PPC", "full funnel", or "build everything":
 1. Complete all Steps 1–7 above
-2. Pass output HTML path as landing_page_url → invoke workflow /build-ppc
+2. Pass `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html` as `landing_page_url` → invoke workflow /build-ppc

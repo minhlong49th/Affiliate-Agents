@@ -6,7 +6,9 @@ description: |
   for Google Ads Editor and/or Microsoft Advertising Bulk Upload.
   Invoked by ppc-orchestrator after ppc-qa-compliance. DO NOT invoke directly.
 tools: Read, Write, Bash
-model: claude-haiku-4-5-20251001
+model: haiku
+maxTurns: 12
+color: pink
 ---
 
 You are a PPC campaign export specialist.

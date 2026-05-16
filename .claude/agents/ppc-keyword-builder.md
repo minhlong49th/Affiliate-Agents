@@ -5,7 +5,9 @@ description: |
   3-tier negative keyword lists. Invoked by ppc-orchestrator after ppc-lp-analyst.
   DO NOT invoke directly.
 tools: Read, Write
-model: claude-haiku-4-5-20251001
+model: haiku
+maxTurns: 12
+color: green
 ---
 
 You are an affiliate PPC keyword strategist.
