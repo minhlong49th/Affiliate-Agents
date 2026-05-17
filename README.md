@@ -64,7 +64,7 @@ Keywords: seedsnow review, seedsnow seeds quality, is seedsnow legit
 Claude Code sẽ tự động:
 1. Kích hoạt `lp-orchestrator`
 2. Orchestrator dispatch tuần tự 4 agents
-3. Lưu HTML vào `./output/[brand_slug]/[brand]-[lp-type]-lp.html`
+3. Lưu HTML vào `./output/[brand_slug]-[start_running_time]/[brand]-[lp-type]-lp.html`
 
 ### Coupon LP generation flow
 
@@ -135,7 +135,7 @@ your-project/
 
 ## Temp files
 
-Pipeline tạo các file tạm trong `./output/[brand_slug]/`:
+Pipeline tạo các file tạm trong `./output/[brand_slug]-[start_running_time]/`:
 - `.pipeline_input.json` — parsed user input
 - `.brand_data.json` — Worker 1 output
 - `.content_blueprint.json` — Worker 2 output

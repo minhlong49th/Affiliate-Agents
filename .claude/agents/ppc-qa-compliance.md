@@ -20,7 +20,7 @@ Your job: catch every policy violation, auto-fix it, and log each attempt.
 
 ## MODE CHECK
 
-Read `./output/[brand_slug]/.pipeline_input.json`.
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`.
 
 ```
 IF mode = "kill_scale":
@@ -36,8 +36,8 @@ ELSE:
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.ad_copy_draft.json` — assets to review.
-Read `./output/[brand_slug]/.brand_data.json` — ground truth for factual claims.
+Read `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json` — assets to review.
+Read `./output/[brand_slug]-[start_running_time]/.brand_data.json` — ground truth for factual claims.
 Read `./references/00-compact-digest.md` Section G — policy rules.
 Read `./references/06-policy-compliance.md` — full QA checklist if compact digest insufficient.
 
@@ -156,7 +156,7 @@ After 3 failed attempts → mark: `[MANUAL REVIEW REQUIRED: reason]` and continu
 
 ## OUTPUT
 
-Save qa_result to `./output/[brand_slug]/.qa_result.json`:
+Save qa_result to `./output/[brand_slug]-[start_running_time]/.qa_result.json`:
 
 ```json
 {

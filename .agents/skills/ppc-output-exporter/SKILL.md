@@ -15,17 +15,17 @@ Output files via `write_to_file`.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.ppc_brand_data.json`
-- `./output/[brand_slug]/.keyword_sets.json`
-- `./output/[brand_slug]/.ad_copy_draft.json`
-- `./output/[brand_slug]/.qa_result.json`
-- `./output/[brand_slug]/.pipeline_input.json`
+- `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json`
+- `./output/[brand_slug]-[start_running_time]/.keyword_sets.json`
+- `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json`
+- `./output/[brand_slug]-[start_running_time]/.qa_result.json`
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`
 
 ---
 
 ## TASK 1 — CAMPAIGN BRIEF (.md)
 
-Generate a human-readable summary in `./output/[brand_slug]/[brand-slug]-campaign-brief.md`.
+Generate a human-readable summary in `./output/[brand_slug]-[start_running_time]/[brand-slug]-campaign-brief.md`.
 
 **Required Sections:**
 - **Campaign Overview**: Name, Budget, Geo, Network.
@@ -40,7 +40,7 @@ Generate a human-readable summary in `./output/[brand_slug]/[brand-slug]-campaig
 ## TASK 2 — GOOGLE ADS CSV EXPORT
 
 Generate a CSV compatible with Google Ads Editor import.
-File: `./output/[brand_slug]/[brand-slug]-google-ads.csv`
+File: `./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads.csv`
 
 **Columns Required:**
 `Campaign, Ad Group, Headline 1, Headline 2, ..., Description 1, Description 2, Final URL, Tracking Template`
@@ -50,7 +50,7 @@ File: `./output/[brand_slug]/[brand-slug]-google-ads.csv`
 ## TASK 3 — BING ADS CSV EXPORT
 
 Generate a CSV compatible with Microsoft Advertising (Bing) import.
-File: `./output/[brand_slug]/[brand-slug]-bing-ads.csv`
+File: `./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads.csv`
 
 **Columns Required:**
 `Campaign, Ad Group, Headline 1, Headline 2, ..., Description 1, Description 2, Final URL, Tracking Template`

@@ -22,7 +22,7 @@ Do NOT start Phase 2 until Phase 1 is fully complete.
 Invoke the @lp-orchestrator agent with the full user input: $ARGUMENTS
 
 The orchestrator will dispatch all LP workers sequentially and return:
-- LP output file path: `./output/[brand-slug]/[brand-slug]-[lp-type]-lp.html`
+- LP output file path: `./output/[brand-slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 
 Wait for LP BUILD COMPLETE signal.
 Extract the output file path from the LP report.
@@ -44,6 +44,6 @@ Wait for PPC CAMPAIGN BUILD COMPLETE signal.
 ## Done
 
 Report:
-- LP output: `./output/[brand-slug]/[brand-slug]-[lp-type]-lp.html`
-- PPC brief: `./output/[brand-slug]/[brand-slug]-[platform]-campaign-brief.md`
+- LP output: `./output/[brand-slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
+- PPC brief: `./output/[brand-slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md`
 - CSV files (if generated)

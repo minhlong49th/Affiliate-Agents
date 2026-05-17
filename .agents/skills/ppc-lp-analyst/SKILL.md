@@ -14,7 +14,7 @@ Output structured JSON only.
 
 ## INPUTS
 
-Use `view_file` to read `./output/[brand_slug]/.pipeline_input.json` for:
+Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` for:
 - brand_name, brand_url, affiliate_url, network, landing_page_url
 - lp_type, coupon_code, target_keyword, niche, geo, brand_slug
 
@@ -25,8 +25,8 @@ Use `view_file` to read `./output/[brand_slug]/.pipeline_input.json` for:
 Check `pipeline_input.json` for key `"full_funnel_cache": true`.
 
 **IF `full_funnel_cache = true`:**
-1. Use `view_file` to read `./output/[brand_slug]/.lp_brand_data.json` as base context
-2. Copy it to `./output/[brand_slug]/.ppc_brand_data.json` (rename for PPC namespace)
+1. Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` as base context
+2. Copy it to `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` (rename for PPC namespace)
 3. ONLY fetch: `landing_page_url` (via `read_url_content` — extract LP headline, offer, CTA only)
 4. SKIP all: `brand_url` fetch, `search_web` calls for affiliate program data
 5. Merge LP analysis into `lp_analysis` field of output JSON
@@ -145,7 +145,7 @@ From LP + brand content, identify:
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.ppc_brand_data.json` using `write_to_file`:
+Save to `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` using `write_to_file`:
 
 ```json
 {

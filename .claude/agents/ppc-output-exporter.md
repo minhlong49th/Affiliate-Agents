@@ -19,10 +19,10 @@ You do NOT rewrite ad copy. Render exactly what qa_result.json contains.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.qa_result.json` — approved ad copy (final_text values only).
-Read `./output/[brand_slug]/.keyword_sets.json` — keywords, match types, negatives.
-Read `./output/[brand_slug]/.brand_data.json` — brand name, slug, offer, platform.
-Read `./output/[brand_slug]/.pipeline_input.json` — platform, mode.
+Read `./output/[brand_slug]-[start_running_time]/.qa_result.json` — approved ad copy (final_text values only).
+Read `./output/[brand_slug]-[start_running_time]/.keyword_sets.json` — keywords, match types, negatives.
+Read `./output/[brand_slug]-[start_running_time]/.brand_data.json` — brand name, slug, offer, platform.
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — platform, mode.
 Read `./references/07-output-formats.md` — exact CSV column specs.
 
 ---
@@ -40,7 +40,7 @@ If placeholders found: substitute with appropriate fallback or mark `[CONFIRM BE
 
 ## OUTPUT 1 — CAMPAIGN BRIEF (Markdown)
 
-Save to: `./output/[brand_slug]/[brand-slug]-[platform]-campaign-brief.md`
+Save to: `./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md`
 
 Template:
 ```markdown
@@ -145,7 +145,7 @@ Values: [v1, v2, v3, v4, v5, v6]
 
 Only generate if `platform = "google"` or `"both"`.
 
-Save to: `./output/[brand_slug]/[brand-slug]-google-ads-import.csv`
+Save to: `./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv`
 
 **Required columns (Google Ads Editor format):**
 ```
@@ -174,7 +174,7 @@ Path 1,Path 2,Final URL,Status,Pin Headline 1 To,Pin Headline 2 To
 
 Only generate if `platform = "bing"` or `"both"`.
 
-Save to: `./output/[brand_slug]/[brand-slug]-bing-ads-import.csv`
+Save to: `./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv`
 
 **Required columns (Microsoft Advertising Bulk format):**
 ```
@@ -225,7 +225,7 @@ After all files saved, output exactly:
 ```
 PPC_OUTPUT_EXPORTER_COMPLETE
 Files saved:
-  ./output/[brand_slug]/[brand-slug]-[platform]-campaign-brief.md
-  ./output/[brand_slug]/[brand-slug]-google-ads-import.csv    [if applicable]
-  ./output/[brand_slug]/[brand-slug]-bing-ads-import.csv      [if applicable]
+  ./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md
+  ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv    [if applicable]
+  ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv      [if applicable]
 ```

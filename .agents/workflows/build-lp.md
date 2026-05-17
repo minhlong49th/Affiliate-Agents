@@ -46,7 +46,7 @@ Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 Before running Worker 1, check if brand data already exists:
 
 ```
-IF ./output/[brand_slug]/.lp_brand_data.json EXISTS:
+IF ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json EXISTS:
   Check file age: (current_time - file_modified_time) in hours
   IF age < 168 (7 days):
     CACHE HIT → skip Worker 1
@@ -64,7 +64,7 @@ ELSE:
 
 Run Worker 1 from lp-builder-agent skill.
 - Input: all collected fields + keyword_list
-- Output: lp_brand_data.json → ./output/[brand_slug]/.lp_brand_data.json
+- Output: lp_brand_data.json → ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json
 - If brand_url returns 403 → proceed with network listing data only, flag it in report
 
 ---
@@ -73,7 +73,7 @@ Run Worker 1 from lp-builder-agent skill.
 
 Run Worker 2 from lp-builder-agent skill.
 - Input: brand_data.json + lp_type + keyword_list
-- Output: content_blueprint.json → ./output/[brand_slug]/.content_blueprint.json
+- Output: content_blueprint.json → ./output/[brand_slug]-[start_running_time]/.content_blueprint.json
 
 ---
 
@@ -103,9 +103,9 @@ RULE: frozen_sections enforcement — Worker 2 MUST NOT modify any path in froze
 
 Run Worker 3 from lp-builder-agent skill.
 - Input: QA-approved (or force-passed) content_blueprint.json
-- Output: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+- Output: `./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 - All HTML wrapped in `<div class="claude-lp-wrapper">` with fully scoped CSS
-- **NOTE:** All final outputs live in `./output/[brand_slug]/` — do NOT use `production_artifacts/`
+- **NOTE:** All final outputs live in `./output/[brand_slug]-[start_running_time]/` — do NOT use `production_artifacts/`
 
 ---
 
@@ -117,7 +117,7 @@ LP BUILD COMPLETE
 ─────────────────────────────────
 Brand:       [brand_name]
 LP Type:     [lp_type]
-Output:      ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+Output:      ./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html
 Primary KW:  [target_keyword]
 Keywords:    [count] — [list joined by " · "]
 QA Result:   [PASS / FORCE-PASSED after N attempts]
@@ -143,7 +143,7 @@ DEPLOY QA (before connecting Google Ads):
 ## Rules of Engagement
 
 - Each step's JSON output is the next step's input — never skip a handoff
-- All outputs (intermediate JSON + final HTML) → `./output/[brand_slug]/`
+- All outputs (intermediate JSON + final HTML) → `./output/[brand_slug]-[start_running_time]/`
 - Only 1 approval gate: missing competitor_brand on comparison LP
 - QA retry max 3 attempts → force-pass with documented issues if still failing
 - Every flag, skip, or force-pass must appear in the output report — no silent failures
@@ -154,4 +154,4 @@ DEPLOY QA (before connecting Google Ads):
 
 If user says "LP + PPC", "full funnel", or "build everything":
 1. Complete all Steps 1–7 above
-2. Pass `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html` as `landing_page_url` → invoke workflow /build-ppc
+2. Pass `./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html` as `landing_page_url` → invoke workflow /build-ppc

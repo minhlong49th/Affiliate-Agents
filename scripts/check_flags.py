@@ -26,7 +26,7 @@ def main():
     if len(sys.argv) < 2:
         print(
             "Usage: python scripts/check_flags.py"
-            " ./output/[brand_slug]/.brand_data.json"
+            " ./output/[brand_slug]-[start_running_time]/.brand_data.json"
         )
         sys.exit(1)
 

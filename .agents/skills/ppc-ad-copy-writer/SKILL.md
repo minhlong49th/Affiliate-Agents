@@ -15,9 +15,9 @@ Output structured JSON only.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.ppc_brand_data.json` — LP headlines, benefits, and offers
-- `./output/[brand_slug]/.keyword_sets.json` — keyword sets per ad group
-- `./output/[brand_slug]/.pipeline_input.json` — brand_name, brand_slug
+- `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` — LP headlines, benefits, and offers
+- `./output/[brand_slug]-[start_running_time]/.keyword_sets.json` — keyword sets per ad group
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — brand_name, brand_slug
 
 ---
 
@@ -66,7 +66,7 @@ For Bing Ads, you can be slightly more aggressive with urgency or symbols if per
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.ad_copy_draft.json` using `write_to_file`:
+Save to `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json` using `write_to_file`:
 
 ```json
 {

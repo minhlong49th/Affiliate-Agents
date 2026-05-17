@@ -55,9 +55,10 @@ ELSE:
 
 ## STEP 2 — BUILD PIPELINE INPUT
 
-Bash: mkdir -p "./output/[brand_slug]"
+start_running_time = current datetime in YYYY-MM-DD-hh-mm format (e.g. 2026-05-17-10-30).
+Bash: mkdir -p "./output/[brand_slug]-[start_running_time]"
 
-Write to `./output/[brand_slug]/.pipeline_input.json`:
+Write to `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`:
 
 ```json
 {
@@ -67,6 +68,7 @@ Write to `./output/[brand_slug]/.pipeline_input.json`:
   "ad_group_type": "auto",
   "mode": "single | batch | kill_scale",
   "brand_slug": "",
+  "start_running_time": "",
   "run_timestamp": ""
 }
 ```
@@ -82,9 +84,9 @@ Run each agent in order. Wait for completion signal before next dispatch.
 
 ### 3a. Dispatch @agent-ppc-lp-analyst
 ```
-Instruction: "Read ./output/[brand_slug]/.pipeline_input.json.
+Instruction: "Read ./output/[brand_slug]-[start_running_time]/.pipeline_input.json.
 Fetch the landing page. Extract brand data, PPC policy, and strategy.
-Save output to ./output/[brand_slug]/.brand_data.json.
+Save output to ./output/[brand_slug]-[start_running_time]/.brand_data.json.
 End with PPC_LP_ANALYST_COMPLETE or PPC_HS1_STOP if PPC policy violation found."
 ```
 → If PPC_HS1_STOP received: STOP entire pipeline. Report: "⛔ HS-1: [brand] bans PPC in affiliate terms. No ad copy generated."
@@ -92,39 +94,39 @@ End with PPC_LP_ANALYST_COMPLETE or PPC_HS1_STOP if PPC policy violation found."
 
 ### 3b. Dispatch @agent-ppc-keyword-builder
 ```
-Instruction: "Read ./output/[brand_slug]/.brand_data.json and ./output/[brand_slug]/.pipeline_input.json.
+Instruction: "Read ./output/[brand_slug]-[start_running_time]/.brand_data.json and ./output/[brand_slug]-[start_running_time]/.pipeline_input.json.
 Generate keyword sets and negative keyword lists for all ad groups.
-Save output to ./output/[brand_slug]/.keyword_sets.json.
+Save output to ./output/[brand_slug]-[start_running_time]/.keyword_sets.json.
 End with PPC_KEYWORD_BUILDER_COMPLETE."
 ```
 
 ### 3c. Dispatch @agent-ppc-ad-copy-writer
 ```
-Instruction: "Read ./output/[brand_slug]/.brand_data.json, ./output/[brand_slug]/.keyword_sets.json,
+Instruction: "Read ./output/[brand_slug]-[start_running_time]/.brand_data.json, ./output/[brand_slug]-[start_running_time]/.keyword_sets.json,
 and ./references/00-compact-digest.md.
 Generate RSA ad copy and ad extensions for all ad groups.
-Save draft to ./output/[brand_slug]/.ad_copy_draft.json.
+Save draft to ./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json.
 End with PPC_AD_COPY_WRITER_COMPLETE."
 ```
 
 ### 3d. Dispatch @agent-ppc-qa-compliance (QA LOOP — max 3 auto-fix attempts per asset)
 ```
-Instruction: "Read ./output/[brand_slug]/.ad_copy_draft.json, ./output/[brand_slug]/.brand_data.json,
+Instruction: "Read ./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json, ./output/[brand_slug]-[start_running_time]/.brand_data.json,
 and ./references/00-compact-digest.md Section G.
 Run full policy QA. Auto-fix violations (max 3 attempts per asset).
 Flag unresolved as [MANUAL REVIEW REQUIRED].
-Save qa_result to ./output/[brand_slug]/.qa_result.json.
+Save qa_result to ./output/[brand_slug]-[start_running_time]/.qa_result.json.
 End with PPC_QA_COMPLETE."
 ```
 
 ### 3e. Dispatch @agent-ppc-output-exporter
 ```
-Instruction: "Read ./output/[brand_slug]/.qa_result.json, ./output/[brand_slug]/.keyword_sets.json,
-./output/[brand_slug]/.brand_data.json, and ./output/[brand_slug]/.pipeline_input.json.
+Instruction: "Read ./output/[brand_slug]-[start_running_time]/.qa_result.json, ./output/[brand_slug]-[start_running_time]/.keyword_sets.json,
+./output/[brand_slug]-[start_running_time]/.brand_data.json, and ./output/[brand_slug]-[start_running_time]/.pipeline_input.json.
 Generate campaign brief markdown + platform CSV files.
-Save to ./output/[brand_slug]/[brand-slug]-[platform]-campaign-brief.md
-and ./output/[brand_slug]/[brand-slug]-google-ads-import.csv (if google or both)
-and ./output/[brand_slug]/[brand-slug]-bing-ads-import.csv (if bing or both).
+Save to ./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md
+and ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv (if google or both)
+and ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv (if bing or both).
 End with PPC_OUTPUT_EXPORTER_COMPLETE."
 ```
 
@@ -147,9 +149,9 @@ PPC Policy:   CLEAR ✓ / FLAGGED ⚠️
 QA RESULT:    [N] assets PASS | [N] assets auto-fixed | [N] MANUAL REVIEW REQUIRED
 
 Output files:
-  📄 ./output/[brand_slug]/[brand-slug]-[platform]-campaign-brief.md
-  📊 ./output/[brand_slug]/[brand-slug]-google-ads-import.csv  (if applicable)
-  📊 ./output/[brand_slug]/[brand-slug]-bing-ads-import.csv    (if applicable)
+  📄 ./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md
+  📊 ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv  (if applicable)
+  📊 ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv    (if applicable)
 ────────────────────────────────────────
 BEFORE LAUNCHING:
 □ Test LP URL live in incognito

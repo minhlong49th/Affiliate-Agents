@@ -14,7 +14,7 @@ You do NOT write LP content. JSON only.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.pipeline_input.json` using `view_file` for all input fields:
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` using `view_file` for all input fields:
 - brand_name, brand_url, affiliate_url, network, lp_type
 - coupon_code, coupon_percent, target_keyword, top_product
 - competitor_brand, keyword_list, brand_slug
@@ -173,7 +173,7 @@ If user DID provide `coupon_code` → set `best_public_discount = null`.
 
 ## OUTPUT
 
-Save this exact JSON structure to `./output/[brand_slug]/.lp_brand_data.json` using `write_to_file`.
+Save this exact JSON structure to `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` using `write_to_file`.
 No prose. No explanation. Only JSON. Use `null` for missing data.
 
 ```json

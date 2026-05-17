@@ -32,8 +32,8 @@ For coupon LP, write as **Edward** — Senior Product Quality Analyst, Material 
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.lp_brand_data.json` — all brand research data
-- `./output/[brand_slug]/.pipeline_input.json` — lp_type, keyword_list, brand_slug
+- `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` — all brand research data
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — lp_type, keyword_list, brand_slug
 - `./knowledge/lp_framework_base.md` — base rules
 - `./knowledge/lp_framework_[lp_type].md` — LP-type-specific rules
 - `./knowledge/copywriting_techniques.md` — copywriting frameworks
@@ -42,7 +42,7 @@ Use `view_file` to read:
 
 ## REVISION MODE CHECK
 
-Check if `./output/[brand_slug]/.qa_result.json` exists using `view_file`.
+Check if `./output/[brand_slug]-[start_running_time]/.qa_result.json` exists using `view_file`.
 
 IF it exists AND `revision_instructions` are present:
 - You are in **REVISION MODE**.
@@ -50,7 +50,7 @@ IF it exists AND `revision_instructions` are present:
 - Do NOT rebuild the full blueprint.
 - Fix ONLY the failing sections listed in `revision_instructions`.
 - Respect `frozen_sections` if present — do NOT modify any path listed there.
-- Patch `./output/[brand_slug]/.content_blueprint.json` using `replace_file_content` for corrected sections only.
+- Patch `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` using `replace_file_content` for corrected sections only.
 - Return to orchestrator after patching.
 
 If no qa_result.json or no revision_instructions → **FULL BUILD MODE** (Opus is appropriate here).
@@ -259,7 +259,7 @@ Paste the printed JSON into the `colors` field of the blueprint.
 
 ## OUTPUT SCHEMA
 
-Save complete content blueprint to `./output/[brand_slug]/.content_blueprint.json` using `write_to_file`.
+Save complete content blueprint to `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` using `write_to_file`.
 
 ### Coupon LP Schema (V2 — Template-Compatible)
 

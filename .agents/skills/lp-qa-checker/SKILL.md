@@ -15,9 +15,9 @@ Score it critically, not charitably. Your job is to catch what the author missed
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.lp_brand_data.json` — ground truth for factual claims
-- `./output/[brand_slug]/.content_blueprint.json` — blueprint to score
-- `./output/[brand_slug]/.pipeline_input.json` — for lp_type, attempt_number, brand_slug
+- `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` — ground truth for factual claims
+- `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` — blueprint to score
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — for lp_type, attempt_number, brand_slug
 - `./knowledge/lp_framework_base.md` — base framework rules
 - `./knowledge/lp_framework_[lp_type].md` — LP-type-specific rules
 
@@ -78,7 +78,7 @@ WARN items do not block progression.
 
 ## OUTPUT
 
-Save qa_result to `./output/[brand_slug]/.qa_result.json` using `write_to_file`:
+Save qa_result to `./output/[brand_slug]-[start_running_time]/.qa_result.json` using `write_to_file`:
 
 ```json
 {

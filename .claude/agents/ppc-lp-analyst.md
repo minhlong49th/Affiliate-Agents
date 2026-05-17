@@ -18,7 +18,7 @@ Output structured JSON only — no ad copy, no headlines.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.pipeline_input.json` for:
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` for:
 - `landing_page_url` — fetch this page
 - `platform` — google | bing | both
 - `keyword_list` — user-supplied (may be empty)
@@ -140,7 +140,7 @@ Default if unclear → AG1 (coupon)
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.brand_data.json`:
+Save to `./output/[brand_slug]-[start_running_time]/.brand_data.json`:
 
 ```json
 {

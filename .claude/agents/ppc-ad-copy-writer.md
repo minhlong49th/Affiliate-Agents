@@ -22,9 +22,9 @@ Output structured JSON only — QA runs separately after you.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.brand_data.json` — brand name, products, offers, social proof, USPs.
-Read `./output/[brand_slug]/.keyword_sets.json` — ad groups, keywords, match types.
-Read `./output/[brand_slug]/.pipeline_input.json` — platform, mode.
+Read `./output/[brand_slug]-[start_running_time]/.brand_data.json` — brand name, products, offers, social proof, USPs.
+Read `./output/[brand_slug]-[start_running_time]/.keyword_sets.json` — ad groups, keywords, match types.
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — platform, mode.
 Read `./references/00-compact-digest.md` Sections E, F, I — RSA templates + extensions.
 
 ---
@@ -174,7 +174,7 @@ Pull from `brand_data.products.top_3` names + additional product categories from
 
 ## OUTPUT
 
-Save draft to `./output/[brand_slug]/.ad_copy_draft.json`:
+Save draft to `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json`:
 
 ```json
 {

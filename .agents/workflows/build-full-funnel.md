@@ -71,7 +71,7 @@ Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 Before running LP Worker 1, check if brand data already exists:
 
 ```
-IF ./output/[brand_slug]/.lp_brand_data.json EXISTS:
+IF ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json EXISTS:
   Check file age: (current_time - file_modified_time) in hours
   IF age < 168 (7 days):
     CACHE HIT → skip LP Worker 1
@@ -87,14 +87,14 @@ ELSE:
 
 Run LP Worker 1 from lp-builder-agent skill.
 - Input: all collected fields + keyword_list
-- Output: brand_data.json → ./output/[brand_slug]/.lp_brand_data.json
+- Output: brand_data.json → ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json
 - If brand_url returns 403 → proceed with network listing data only, flag it
 
 ### Step 5 — Content Blueprint (LP Worker 2)
 
 Run LP Worker 2 from lp-builder-agent skill.
 - Input: lp_brand_data.json + lp_type + keyword_list
-- Output: content_blueprint.json → ./output/[brand_slug]/.content_blueprint.json
+- Output: content_blueprint.json → ./output/[brand_slug]-[start_running_time]/.content_blueprint.json
 
 ### Step 6 — QA Loop (LP Worker 4) — max 3 attempts
 
@@ -120,9 +120,9 @@ RULE: frozen_sections enforcement — LP Worker 2 MUST NOT modify any path in fr
 
 Run LP Worker 3 from lp-builder-agent skill.
 - Input: QA-approved (or force-passed) content_blueprint.json
-- Output: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+- Output: `./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 - All HTML wrapped in `<div class="claude-lp-wrapper">` with fully scoped CSS
-- **NOTE:** All final outputs live in `./output/[brand_slug]/` — do NOT use `production_artifacts/`
+- **NOTE:** All final outputs live in `./output/[brand_slug]-[start_running_time]/` — do NOT use `production_artifacts/`
 
 ### Step 8 — LP Phase Summary
 
@@ -132,7 +132,7 @@ LP PHASE COMPLETE
 ─────────────────────────────────
 Brand:      [brand_name]
 LP Type:    [lp_type]
-Output:     ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+Output:     ./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html
 Primary KW: [target_keyword]
 LP QA:      [PASS / FORCE-PASSED after N attempts]
 ─────────────────────────────────
@@ -148,12 +148,12 @@ Set landing_page_url = path of HTML file output above.
 
 In Full Funnel mode, LP Phase has already produced brand research. Before invoking PPC-W1:
 
-**Action: Update `./output/[brand_slug]/.pipeline_input.json`** — add these fields:
+**Action: Update `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`** — add these fields:
 ```json
 {
   "full_funnel_cache": true,
-  "lp_brand_data_path": "./output/[brand_slug]/.lp_brand_data.json",
-  "landing_page_url": "./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html"
+  "lp_brand_data_path": "./output/[brand_slug]-[start_running_time]/.lp_brand_data.json",
+  "landing_page_url": "./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html"
 }
 ```
 
@@ -166,19 +166,19 @@ Run PPC Worker 1 from ppc-affiliate-pipeline skill.
 - LP URL check: SKIP (LP was just built and verified in Phase 1)
 - Brand URL fetch: SKIP (reuse lp_brand_data.json — already researched)
 - Only task: fetch and parse `landing_page_url` to extract LP headline, offer, CTA
-- Output: `ppc_brand_data.json` → `./output/[brand_slug]/.ppc_brand_data.json`
+- Output: `ppc_brand_data.json` → `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json`
 
 ### Step 10 — Keyword Generation (PPC Worker 2)
 
 Run PPC Worker 2 from ppc-affiliate-pipeline skill.
 - Input: ppc_brand_data.json
-- Output: keyword_sets.json → ./output/[brand_slug]/.keyword_sets.json
+- Output: keyword_sets.json → ./output/[brand_slug]-[start_running_time]/.keyword_sets.json
 
 ### Step 11 — Ad Copy Writing (PPC Worker 3)
 
 Run PPC Worker 3 from ppc-affiliate-pipeline skill.
 - Input: ppc_brand_data.json + keyword_sets.json
-- Output: ad_copy_draft.json → ./output/[brand_slug]/.ad_copy_draft.json
+- Output: ad_copy_draft.json → ./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json
 
 ### Step 12 — QA Compliance (PPC Worker 4)
 
@@ -186,13 +186,13 @@ Run PPC Worker 4 from ppc-affiliate-pipeline skill.
 - Input: ad_copy_draft.json + keyword_sets.json
 - If QA FAIL → fix failing ad groups only, re-run PPC Worker 3 (max 1 retry)
 - If still FAIL → force-pass, tag group [NEEDS_MANUAL_REVIEW]
-- Output: ppc_qa_result.json → ./output/[brand_slug]/.ppc_qa_result.json
+- Output: ppc_qa_result.json → ./output/[brand_slug]-[start_running_time]/.ppc_qa_result.json
 
 ### Step 13 — CSV + Brief Export (PPC Worker 5)
 
 Run PPC Worker 5 from ppc-affiliate-pipeline skill.
 - Input: ad_copy_draft.json + keyword_sets.json + ppc_qa_result.json + ppc_brand_data.json
-- Output (save to `./output/[brand_slug]/`):
+- Output (save to `./output/[brand_slug]-[start_running_time]/`):
   - `[brand-slug]-campaign-brief.md`
   - `[brand-slug]-google-ads.csv`
   - `[brand-slug]-bing-ads.csv`
@@ -210,7 +210,7 @@ LP Type:  [lp_type]
 
 LP OUTPUT
 ─────────────────────────────────
-File:     ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+File:     ./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html
 QA:       [PASS / FORCE-PASSED after N attempts]
 Keywords: [count] — [list joined by " · "]
 
@@ -223,9 +223,9 @@ Keywords:     [count] total
 PPC QA:       [PASS / FORCE-PASSED]
   Approved: [N]   Flagged: [N]
 Files:
-  Brief:      ./output/[brand_slug]/[brand-slug]-campaign-brief.md
-  Google CSV: ./output/[brand_slug]/[brand-slug]-google-ads.csv
-  Bing CSV:   ./output/[brand_slug]/[brand-slug]-bing-ads.csv
+  Brief:      ./output/[brand_slug]-[start_running_time]/[brand-slug]-campaign-brief.md
+  Google CSV: ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads.csv
+  Bing CSV:   ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads.csv
 ═════════════════════════════════════
 BROWSER QA (after pasting LP into WordPress):
 □ Reveal button → brand site opens in new tab
@@ -253,7 +253,7 @@ DEPLOY QA (before connecting Google Ads):
 ## Rules of Engagement
 
 - Hard Stop (Step 2) runs before any worker — forbidden category = full stop for both phases
-- All outputs (intermediate JSON + final HTML + CSV) → `./output/[brand_slug]/`
+- All outputs (intermediate JSON + final HTML + CSV) → `./output/[brand_slug]-[start_running_time]/`
 - Only 1 approval gate: missing competitor_brand on comparison LP (Step 1)
 - Phase 1 output (LP HTML path) is automatically passed as landing_page_url to Phase 2 — user does not need to provide it
 - LP QA retry cap: 3 attempts | PPC QA retry cap: 1 attempt per ad group

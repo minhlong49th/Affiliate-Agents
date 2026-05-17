@@ -9,8 +9,8 @@ Two independent pipelines sharing one project:
 
 Both can run independently or back-to-back on the same brand.
 
-All LP output files are saved to `./output/[brand_slug]/` (orchestrator creates subfolder per brand).
-All PPC output files are saved to `./output/[brand_slug]/` (orchestrator creates subfolder per brand).
+All LP output files are saved to `./output/[brand_slug]-[start_running_time]/` (orchestrator creates timestamped subfolder per run).
+All PPC output files are saved to `./output/[brand_slug]-[start_running_time]/` (orchestrator creates timestamped subfolder per run).
 
 ---
 
@@ -76,11 +76,11 @@ none of the above                                               → coupon (defa
 `comparison` LP requires `competitor_brand` — ask if missing.
 
 ### LP Context-passing protocol
-- Orchestrator → `./output/[brand_slug]/.pipeline_input.json`
-- Worker 1 → `./output/[brand_slug]/.lp_brand_data.json`
-- Worker 2 → `./output/[brand_slug]/.content_blueprint.json`
-- Worker 4 (QA) → `./output/[brand_slug]/.qa_result.json`
-- Worker 3 → `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+- Orchestrator → `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`
+- Worker 1 → `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json`
+- Worker 2 → `./output/[brand_slug]-[start_running_time]/.content_blueprint.json`
+- Worker 4 (QA) → `./output/[brand_slug]-[start_running_time]/.qa_result.json`
+- Worker 3 → `./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 
 ### LP Knowledge files (`./knowledge/`)
 - `lp_framework_base.md`, `lp_framework_coupon.md`, `lp_framework_review.md`, `lp_framework_comparison.md`
@@ -113,16 +113,16 @@ ppc-orchestrator
 ```
 
 ### PPC Context-passing protocol
-- Orchestrator → `./output/[brand_slug]/.pipeline_input.json`
-- Worker 1 → `./output/[brand_slug]/.ppc_brand_data.json`
-- Worker 2 → `./output/[brand_slug]/.keyword_sets.json`
-- Worker 3 → `./output/[brand_slug]/.ad_copy_draft.json`
-- Worker 4 (QA) → `./output/[brand_slug]/.qa_result.json`
+- Orchestrator → `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`
+- Worker 1 → `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json`
+- Worker 2 → `./output/[brand_slug]-[start_running_time]/.keyword_sets.json`
+- Worker 3 → `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json`
+- Worker 4 (QA) → `./output/[brand_slug]-[start_running_time]/.qa_result.json`
 
 ### PPC Final output
-- `./output/[brand_slug]/[brand-slug]-[platform]-campaign-brief.md`
-- `./output/[brand_slug]/[brand-slug]-google-ads-import.csv`
-- `./output/[brand_slug]/[brand-slug]-bing-ads-import.csv`
+- `./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md`
+- `./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv`
+- `./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv`
 
 ### PPC Reference files (`./references/`)
 - `00-compact-digest.md` — master index (Sections A–I)
@@ -169,7 +169,7 @@ ppc-orchestrator
 | `affiliate_url` unverified | Proceed. Flag in data_quality. User checks manually. |
 | `brand_url` returns 403 | Worker 1 uses network data only. Flag "research limited." |
 | `lp_type=comparison` and no `competitor_brand` | Ask user before proceeding. |
-| `data_quality.flags` contains any flag | IGNORED in normal workflow. Agents never check flags. Run `python scripts/check_flags.py ./output/[brand_slug]/.lp_brand_data.json` to check manually. |
+| `data_quality.flags` contains any flag | IGNORED in normal workflow. Agents never check flags. Run `python scripts/check_flags.py ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` to check manually. |
 
 ---
 
@@ -241,7 +241,7 @@ After CSV/brief generated, the orchestrator outputs:
 
 ## Cleanup temp files
 ```bash
-rm ./output/*/.*json
+rm ./output/*-*/.*json
 ```
 
 <!-- rtk-instructions v2 -->

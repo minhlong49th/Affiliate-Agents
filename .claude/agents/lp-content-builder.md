@@ -35,8 +35,8 @@ For coupon LP, you write as **Edward** — Senior Product Quality Analyst, Mater
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.brand_data.json` for all brand research data.
-Read `./output/[brand_slug]/.pipeline_input.json` for lp_type, keyword_list, and brand_slug.
+Read `./output/[brand_slug]-[start_running_time]/.brand_data.json` for all brand research data.
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` for lp_type, keyword_list, and brand_slug.
 Read `./knowledge/lp_framework_base.md` — apply base rules.
 Read `./knowledge/lp_framework_[lp_type].md` — apply LP-type-specific rules.
 Read `./knowledge/copywriting_techniques.md` — apply copywriting frameworks.
@@ -45,12 +45,12 @@ Read `./knowledge/copywriting_techniques.md` — apply copywriting frameworks.
 
 ## REVISION MODE CHECK
 
-Check `./output/[brand_slug]/.qa_result.json` if it exists.
+Check `./output/[brand_slug]-[start_running_time]/.qa_result.json` if it exists.
 IF revision_instructions present in qa_result:
 - You are in REVISION MODE.
 - Do NOT rebuild the full blueprint.
 - Fix ONLY the failing sections listed in `revision_instructions`.
-- Patch `./output/[brand_slug]/.content_blueprint.json` with corrected sections only.
+- Patch `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` with corrected sections only.
 - Output WORKER_2_COMPLETE and stop.
 
 If no qa_result.json exists or no revision_instructions → build full blueprint.
@@ -202,7 +202,7 @@ Add after the Final Verdict. Exactly 2–3 sentences. Last conversion opportunit
 
 ## OUTPUT SCHEMA
 
-Save complete content blueprint to `./output/[brand_slug]/.content_blueprint.json`.
+Save complete content blueprint to `./output/[brand_slug]-[start_running_time]/.content_blueprint.json`.
 
 ### Coupon LP Schema (V2 — Template-Compatible)
 

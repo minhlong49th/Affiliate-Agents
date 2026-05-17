@@ -15,8 +15,8 @@ Output structured JSON only.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.ppc_brand_data.json` — keyword signals and ad group types
-- `./output/[brand_slug]/.pipeline_input.json` — target_keyword, geo, brand_slug
+- `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` — keyword signals and ad group types
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — target_keyword, geo, brand_slug
 
 ---
 
@@ -63,7 +63,7 @@ Generate a list of 20+ negative keywords to prevent wasted spend:
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.keyword_sets.json` using `write_to_file`:
+Save to `./output/[brand_slug]-[start_running_time]/.keyword_sets.json` using `write_to_file`:
 
 ```json
 {

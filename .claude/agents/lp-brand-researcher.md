@@ -19,7 +19,7 @@ You do NOT write LP content. JSON only.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.pipeline_input.json` for all input fields:
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` for all input fields:
 - brand_name, brand_url, affiliate_url, network, lp_type
 - coupon_code, coupon_percent, target_keyword, top_product
 - competitor_brand, keyword_list
@@ -192,7 +192,7 @@ Flags are collected for manual review only. Agents never act on them. Use `pytho
 
 ## OUTPUT
 
-Save this exact JSON structure to `./output/[brand_slug]/.brand_data.json`.
+Save this exact JSON structure to `./output/[brand_slug]-[start_running_time]/.brand_data.json`.
 No prose. No explanation. Only JSON.
 Use null for missing data. Use "ESTIMATED" tag in value if inferred not confirmed.
 

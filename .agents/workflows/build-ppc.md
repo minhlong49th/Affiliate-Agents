@@ -81,7 +81,7 @@ Proceed to Step 4.
 Before running Worker 1, check if brand data already exists:
 
 ```
-IF ./output/[brand_slug]/.ppc_brand_data.json EXISTS:
+IF ./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json EXISTS:
   Check file age: (current_time - file_modified_time) in hours
   IF age < 168 (7 days):
     CACHE HIT → skip Worker 1
@@ -97,7 +97,7 @@ ELSE:
  
 Run Worker 1 from ppc-affiliate-pipeline skill.
 - Input: all collected fields
-- Output: `ppc_brand_data.json` → `./output/[brand_slug]/.ppc_brand_data.json`
+- Output: `ppc_brand_data.json` → `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json`
 - If `landing_page_url` returns 404 → use `brand_url` as substitute for analysis only, flag it
 ---
  
@@ -105,14 +105,14 @@ Run Worker 1 from ppc-affiliate-pipeline skill.
  
 Run Worker 2 from ppc-affiliate-pipeline skill.
 - Input: `brand_data.json`
-- Output: `keyword_sets.json` → `./output/[brand_slug]/.keyword_sets.json`
+- Output: `keyword_sets.json` → `./output/[brand_slug]-[start_running_time]/.keyword_sets.json`
 ---
  
 ### Step 6 — Ad Copy Writing (Worker 3)
  
 Run Worker 3 from ppc-affiliate-pipeline skill.
 - Input: `brand_data.json` + `keyword_sets.json`
-- Output: `ad_copy_draft.json` → `./output/[brand_slug]/.ad_copy_draft.json`
+- Output: `ad_copy_draft.json` → `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json`
 ---
  
 ### Step 7 — QA Compliance (Worker 4)
@@ -121,14 +121,14 @@ Run Worker 4 from ppc-affiliate-pipeline skill.
 - Input: `ad_copy_draft.json` + `keyword_sets.json`
 - If QA FAIL → fix failing ad groups only, re-run Worker 3 for those groups (max 1 retry)
 - If still FAIL after retry → force-pass, tag group `[NEEDS_MANUAL_REVIEW]`
-- Output: `qa_result.json` → `./output/[brand_slug]/.qa_result.json`
+- Output: `qa_result.json` → `./output/[brand_slug]-[start_running_time]/.qa_result.json`
 ---
  
 ### Step 8 — CSV + Brief Export (Worker 5)
  
 Run Worker 5 from ppc-affiliate-pipeline skill.
 - Input: `ad_copy_draft.json` + `keyword_sets.json` + `qa_result.json` + `brand_data.json`
-- Output (save to `./output/[brand_slug]/`):
+- Output (save to `./output/[brand_slug]-[start_running_time]/`):
   - `[brand-slug]-campaign-brief.md`
   - `[brand-slug]-google-ads.csv`
   - `[brand-slug]-bing-ads.csv`
@@ -152,9 +152,9 @@ QA RESULT: [PASS / FORCE-PASSED]
   Approved groups: [N]   Flagged: [N]
  
 OUTPUT FILES:
-  📄 Brief:      ./output/[brand_slug]/[brand-slug]-campaign-brief.md
-  📊 Google CSV: ./output/[brand_slug]/[brand-slug]-google-ads.csv
-  📊 Bing CSV:   ./output/[brand_slug]/[brand-slug]-bing-ads.csv
+  📄 Brief:      ./output/[brand_slug]-[start_running_time]/[brand-slug]-campaign-brief.md
+  📊 Google CSV: ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads.csv
+  📊 Bing CSV:   ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads.csv
 ─────────────────────────────────
 PRE-LAUNCH CHECKLIST:
 □ Verify affiliate PPC policy allows brand keyword bidding
@@ -173,7 +173,7 @@ PRE-LAUNCH CHECKLIST:
 ## Rules of Engagement
  
 - **Hard stops run first, always** — HS-1 and HS-2 execute before any worker
-- **Save Location:** All intermediate JSON + all final outputs → `./output/[brand_slug]/`
+- **Save Location:** All intermediate JSON + all final outputs → `./output/[brand_slug]-[start_running_time]/`
 - **QA retry cap:** max 1 retry per failing ad group, then force-pass with `[NEEDS_MANUAL_REVIEW]` tag
 - **Batch resilience:** one brand failing never halts the rest — log and continue
 - **Kill/scale mode is read-only:** no keywords or ad copy generated, optimization report only

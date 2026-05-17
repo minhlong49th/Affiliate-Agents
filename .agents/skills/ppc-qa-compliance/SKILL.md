@@ -15,10 +15,10 @@ Output structured JSON only.
 ## INPUTS
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.ad_copy_draft.json` — draft to review
-- `./output/[brand_slug]/.keyword_sets.json` — keyword sets
-- `./output/[brand_slug]/.ppc_brand_data.json` — factual truth
-- `./output/[brand_slug]/.pipeline_input.json` — mode, brand_slug
+- `./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json` — draft to review
+- `./output/[brand_slug]-[start_running_time]/.keyword_sets.json` — keyword sets
+- `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` — factual truth
+- `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` — mode, brand_slug
 
 ---
 
@@ -53,7 +53,7 @@ Analyze `performance_data` from `pipeline_input.json`.
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.qa_result.json` using `write_to_file`:
+Save to `./output/[brand_slug]-[start_running_time]/.qa_result.json` using `write_to_file`:
 
 ```json
 {

@@ -4,7 +4,7 @@ description: |
   Worker 3 (final step) in the LP builder pipeline. For coupon LPs, renders HTML
   via the Jinja2 template script. For non-coupon LPs, generates HTML from scratch
   using the design system. Invoked by lp-orchestrator after QA passes.
-  Saves output to ./output/[brand_slug]/.
+  Saves output to ./output/[brand_slug]-[start_running_time]/.
 tools: Read, Write, Bash
 model: sonnet
 permissionMode: acceptEdits
@@ -19,7 +19,7 @@ Your job: produce WordPress-ready HTML from the content blueprint.
 
 ## ROUTING: Check LP Type First
 
-Read `./output/[brand_slug]/.content_blueprint.json` and check `lp_type`.
+Read `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` and check `lp_type`.
 
 **IF `lp_type` == `"coupon"`** → follow COUPON LP PATH (Jinja2 template script).
 **IF `lp_type` != `"coupon"`** → follow NON-COUPON LP PATH (prompt-based).
@@ -30,7 +30,7 @@ Read `./output/[brand_slug]/.content_blueprint.json` and check `lp_type`.
 
 ### Step 1 — Read Input
 
-Read `./output/[brand_slug]/.content_blueprint.json`.
+Read `./output/[brand_slug]-[start_running_time]/.content_blueprint.json`.
 Extract `brand_slug` and `lp_type`.
 
 ### Step 1.5 — Schema Validation (MANDATORY before running script)
@@ -69,18 +69,18 @@ This prevents silent Jinja2 rendering where missing fields produce empty strings
 
 ```bash
 python scripts/generate_lp_coupon_page.py \
-  --data "./output/<brand_slug>/.content_blueprint.json" \
+  --data "./output/<brand_slug>-<start_running_time>/.content_blueprint.json" \
   --slug "<brand_slug>" \
-  --out "./output/<brand_slug>/"
+  --out "./output/<brand_slug>-<start_running_time>/"
 ```
 
-This produces `./output/<brand_slug>/<brand_slug>.html`.
+This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>.html`.
 
 ### Step 3 — Rename to Final Output
 
 ```bash
-mv "./output/<brand_slug>/<brand_slug>.html" \
-   "./output/<brand_slug>/<brand_slug>-coupon-lp.html"
+mv "./output/<brand_slug>-<start_running_time>/<brand_slug>.html" \
+   "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html"
 ```
 
 ### Step 4 — Verify Output
@@ -89,22 +89,22 @@ Run these checks:
 
 ```bash
 # Check file exists and has content
-test -s "./output/<brand_slug>/<brand_slug>-coupon-lp.html" && echo "HAS_CONTENT"
+test -s "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" && echo "HAS_CONTENT"
 
 # Check for placeholder tokens
-grep -n '\[[A-Z_]+\]' "./output/<brand_slug>/<brand_slug>-coupon-lp.html" || echo "NO_PLACEHOLDERS"
+grep -n '\[[A-Z_]+\]' "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" || echo "NO_PLACEHOLDERS"
 
 # Check for unrendered Jinja2 variables
-grep -n '{{' "./output/<brand_slug>/<brand_slug>-coupon-lp.html" || echo "NO_TEMPLATE_VARS"
+grep -n '{{' "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" || echo "NO_TEMPLATE_VARS"
 
 # Check for literal null
-grep -n '"null"\|: null' "./output/<brand_slug>/<brand_slug>-coupon-lp.html" || echo "NO_NULL"
+grep -n '"null"\|: null' "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" || echo "NO_NULL"
 
 # Check for wrapper class
-grep -q 'claude-lp-wrapper' "./output/<brand_slug>/<brand_slug>-coupon-lp.html" && echo "WRAPPER_OK"
+grep -q 'claude-lp-wrapper' "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" && echo "WRAPPER_OK"
 
 # Check for coupon reveal JS
-grep -q 'coupon-reveal-btn' "./output/<brand_slug>/<brand_slug>-coupon-lp.html" && echo "JS_OK"
+grep -q 'coupon-reveal-btn' "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html" && echo "JS_OK"
 ```
 
 If any check fails: log the failure, warn "Manual review recommended", but still output WORKER_3_COMPLETE.
@@ -114,7 +114,7 @@ If any check fails: log the failure, warn "Manual review recommended", but still
 Output exactly:
 ```
 WORKER_3_COMPLETE
-Output: ./output/<brand_slug>/<brand_slug>-coupon-lp.html
+Output: ./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html
 Method: jinja2-template
 ```
 
@@ -126,7 +126,7 @@ For review LP, comparison LP, advertorial LP, and quiz LP — use this prompt-ba
 
 ### INPUTS
 
-Read `./output/[brand_slug]/.content_blueprint.json` — approved content to render.
+Read `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` — approved content to render.
 (Trim: metadata.keyword_placement_log, metadata.warnings arrays — not needed for rendering)
 Read `./knowledge/html_design_system_lite.md` — ALL CSS variables, components, and rules.
 
@@ -251,7 +251,7 @@ Do NOT output a file with visible placeholder text.
 
 ### OUTPUT
 
-Save final HTML to: `./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+Save final HTML to: `./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 
 Where:
 - `brand-slug` = brand_name lowercased, spaces to hyphens (e.g. "buildasoil")
@@ -266,5 +266,5 @@ File must be self-contained:
 After saving, output exactly:
 ```
 WORKER_3_COMPLETE
-Output: ./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html
+Output: ./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html
 ```

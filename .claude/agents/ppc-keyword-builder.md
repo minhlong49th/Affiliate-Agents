@@ -18,8 +18,8 @@ Output structured JSON only — no ad copy, no headlines.
 
 ## INPUTS
 
-Read `./output/[brand_slug]/.brand_data.json` for brand name, products, competitor mentions, strategy.
-Read `./output/[brand_slug]/.pipeline_input.json` for platform, keyword_list (user-supplied).
+Read `./output/[brand_slug]-[start_running_time]/.brand_data.json` for brand name, products, competitor mentions, strategy.
+Read `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` for platform, keyword_list (user-supplied).
 Read `./references/00-compact-digest.md` Sections C and D for templates and negatives.
 
 ---
@@ -97,7 +97,7 @@ side effects, recall, certification, course, wholesale, manufacturer
 
 ## OUTPUT
 
-Save to `./output/[brand_slug]/.keyword_sets.json`:
+Save to `./output/[brand_slug]-[start_running_time]/.keyword_sets.json`:
 
 ```json
 {

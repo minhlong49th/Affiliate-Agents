@@ -13,7 +13,7 @@ Your job: produce WordPress-ready HTML from the content blueprint.
 
 ## ROUTING: Check LP Type First
 
-Use `view_file` to read `./output/[brand_slug]/.content_blueprint.json` and check `lp_type`.
+Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` and check `lp_type`.
 
 **IF `lp_type` == `"coupon"`** → follow COUPON LP PATH (Jinja2 script via run_command).
 **IF `lp_type` != `"coupon"`** → follow NON-COUPON LP PATH (prompt-based generation).
@@ -24,7 +24,7 @@ Use `view_file` to read `./output/[brand_slug]/.content_blueprint.json` and chec
 
 ### Step 1 — Read & Validate Input
 
-Use `view_file` to read `./output/[brand_slug]/.content_blueprint.json`.
+Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.content_blueprint.json`.
 Extract `brand_slug` and `lp_type`.
 
 ### Step 1.5 — Schema Validation (MANDATORY before running script)
@@ -60,18 +60,18 @@ If ANY required field is missing or empty: report exactly which fields are absen
 Use `run_command`:
 ```powershell
 python scripts/generate_lp_coupon_page.py `
-  --data "./output/<brand_slug>/.content_blueprint.json" `
+  --data "./output/<brand_slug>-<start_running_time>/.content_blueprint.json" `
   --slug "<brand_slug>" `
-  --out "./output/<brand_slug>/"
+  --out "./output/<brand_slug>-<start_running_time>/"
 ```
 
-This produces `./output/<brand_slug>/<brand_slug>.html`.
+This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>.html`.
 
 ### Step 3 — Rename to Final Output
 
 Use `run_command`:
 ```powershell
-Rename-Item -Path "./output/<brand_slug>/<brand_slug>.html" `
+Rename-Item -Path "./output/<brand_slug>-<start_running_time>/<brand_slug>.html" `
             -NewName "<brand_slug>-coupon-lp.html"
 ```
 
@@ -81,7 +81,7 @@ Run these checks via `run_command`:
 
 ```powershell
 # Check file exists and has content
-$f = "./output/<brand_slug>/<brand_slug>-coupon-lp.html"
+$f = "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html"
 if ((Test-Path $f) -and (Get-Item $f).Length -gt 0) { "HAS_CONTENT" } else { "EMPTY_FILE" }
 
 # Check for placeholder tokens
@@ -110,7 +110,7 @@ For review, comparison, advertorial, and quiz LP.
 ### Inputs
 
 Use `view_file` to read:
-- `./output/[brand_slug]/.content_blueprint.json` — approved content
+- `./output/[brand_slug]-[start_running_time]/.content_blueprint.json` — approved content
 - `./knowledge/html_design_system_lite.md` — ALL CSS variables, components, and rules
 
 ### CRITICAL CSS ISOLATION (REQUIRED FOR WORDPRESS)
@@ -221,7 +221,7 @@ If found: replace with appropriate fallback or remove section. Do NOT output a f
 ### OUTPUT
 
 Use `write_to_file` to save final HTML to:
-`./output/[brand_slug]/[brand-slug]-[lp-type]-lp.html`
+`./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html`
 
 File must be self-contained:
 - All CSS in `<style>` tag (no external stylesheets)
