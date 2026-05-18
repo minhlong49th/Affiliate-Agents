@@ -9,7 +9,7 @@ Build a complete affiliate funnel in one command: LP first, PPC second. Output i
 
 ## Instructions
 
-### Step 1 — Collect Inputs
+### Step 1 — Collect Inputs, Route LP Type & Hard Stop
 
 Ask the user ONCE if any REQUIRED field is missing:
 
@@ -28,11 +28,18 @@ APPROVAL GATE: If lp_type = comparison AND competitor_brand is missing → stop 
 
 NOTE: landing_page_url is NOT required from user — it will be the HTML output from Phase 1.
 
----
+**Detect lp_type** from user input:
+- "coupon" / "promo code" / "discount code" → coupon
+- "review" / "worth it" / "legit" → review
+- "vs" / "versus" / "alternative" → comparison
+- traffic source is facebook / native / youtube → advertorial
+- "quiz" / "personalized" / "recommendation" → quiz
+- (no match) → coupon (default)
 
-### Step 2 — Hard Stop Protocol (run BEFORE anything else)
+Normalize keyword_list to array regardless of format (comma, bullets, JSON).
+Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 
-Scan brand_name, niche, lp_type for forbidden PPC categories:
+**Hard Stop** — scan brand_name, niche, lp_type for forbidden categories:
 
 FULL STOP — halt entire pipeline immediately:
 - Payday loans / cash advance / debt consolidation
@@ -50,21 +57,6 @@ FLAG only (proceed with note):
 - If ppc_policy = not_mentioned → flag "PPC policy unconfirmed — verify before launch"
 
 ---
-
-## PHASE 1 — BUILD LANDING PAGE
-
-### Step 3 — Route LP Type
-
-Detect lp_type from user input:
-- "coupon" / "promo code" / "discount code" → coupon
-- "review" / "worth it" / "legit" → review
-- "vs" / "versus" / "alternative" → comparison
-- traffic source is facebook / native / youtube → advertorial
-- "quiz" / "personalized" / "recommendation" → quiz
-- (no match) → coupon (default)
-
-Normalize keyword_list to array regardless of format (comma, bullets, JSON).
-Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 
 ### Step 3.5 — Research Cache Check
 
@@ -96,21 +88,21 @@ Run LP Worker 2 from lp-builder-agent skill.
 - Input: lp_brand_data.json + lp_type + keyword_list
 - Output: content_blueprint.json → ./output/[brand_slug]-[start_running_time]/.content_blueprint.json
 
-### Step 6 — QA Loop (LP Worker 4) — max 3 attempts
+### Step 6 — QA Loop (LP Worker 4) — max 2 attempts
 
 Run LP Worker 4 from lp-builder-agent skill.
 
 attempt = 1
-WHILE attempt ≤ 3:
+WHILE attempt ≤ 2:
   Score content_blueprint → write .lp_qa_result.json
   IF pass_to_worker_3 = true → break, go to Step 7
-  IF attempt < 3:
+  IF attempt = 1:
     Extract `pass_section_paths` from .lp_qa_result.json
     Send to LP Worker 2:
       - `revision_instructions` (what to fix)
       - `frozen_sections` = pass_section_paths (what NOT to touch)
     Re-run Step 5 (LP Worker 2 in REVISION MODE — surgical patch only)
-  IF attempt = 3 AND still FAIL → force-pass, document issues → go to Step 7
+  IF attempt = 2 AND still FAIL → force-pass, document issues → go to Step 7
   attempt += 1
 
 RULE: data_quality flags never halt the pipeline. Proceed unconditionally.
@@ -146,27 +138,23 @@ Set landing_page_url = path of HTML file output above.
 
 ### Step 8.5 — Research Cache Check (LP→PPC Handoff)
 
-In Full Funnel mode, LP Phase has already produced brand research. Before invoking PPC-W1:
+In Full Funnel mode, LP Phase has already produced brand research. Instead of running PPC-W1:
 
-**Action: Update `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`** — add these fields:
-```json
-{
-  "full_funnel_cache": true,
-  "lp_brand_data_path": "./output/[brand_slug]-[start_running_time]/.lp_brand_data.json",
-  "landing_page_url": "./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html"
-}
-```
-
-Then log: `"CACHE HIT (Full Funnel) — LP brand_data will be reused for PPC phase"`
+**Action:**
+- Copy `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` to `.ppc_brand_data.json` in the same directory.
+- Update `./output/[brand_slug]-[start_running_time]/.pipeline_input.json` to include:
+  ```json
+  {
+    "full_funnel_cache": true,
+    "landing_page_url": "./output/[brand_slug]-[start_running_time]/[brand-slug]-[lp-type]-lp.html"
+  }
+  ```
+- Log: `"CACHE HIT (Full Funnel) — LP brand_data copied to PPC phase. Skipping PPC-W1."`
 
 ### Step 9 — LP Analysis (PPC Worker 1)
 
-Run PPC Worker 1 from ppc-affiliate-pipeline skill.
-- Input: all collected fields + `landing_page_url` from Step 7 + **lp_brand_data.json as base context**
-- LP URL check: SKIP (LP was just built and verified in Phase 1)
-- Brand URL fetch: SKIP (reuse lp_brand_data.json — already researched)
-- Only task: fetch and parse `landing_page_url` to extract LP headline, offer, CTA
-- Output: `ppc_brand_data.json` → `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json`
+**SKIP PPC WORKER 1 ENTIRELY** in Full Funnel mode.
+Proceed directly to Step 10 using the `.ppc_brand_data.json` created in Step 8.5.
 
 ### Step 10 — Keyword Generation (PPC Worker 2)
 
@@ -195,7 +183,10 @@ Run PPC Worker 5 from ppc-affiliate-pipeline skill.
 - Output (save to `./output/[brand_slug]-[start_running_time]/`):
   - `[brand-slug]-campaign-brief.md`
   - `[brand-slug]-google-ads.csv`
-  - `[brand-slug]-bing-ads.csv`
+- **Post-Worker Script (Bing CSV Generation):**
+  - Read `[brand-slug]-google-ads.csv`
+  - Find & Replace tracking parameters if needed (e.g., `utm_source=google` → `utm_source=bing`)
+  - Save as `[brand-slug]-bing-ads.csv`
 
 ---
 

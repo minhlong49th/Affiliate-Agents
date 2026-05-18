@@ -125,12 +125,12 @@ Write this to `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`:
 - Instruction: "Read ./output/[brand_slug]-[start_running_time]/.brand_data.json. Build complete content blueprint. Save to ./output/[brand_slug]-[start_running_time]/.content_blueprint.json. End with WORKER_2_COMPLETE."
 - Wait for WORKER_2_COMPLETE signal before proceeding.
 
-### 5c. Dispatch @agent-lp-qa-checker (QA LOOP — max 3 attempts)
+### 5c. Dispatch @agent-lp-qa-checker (QA LOOP — max 2 attempts)
 
 ```
 attempt_number = 1
 
-WHILE attempt_number <= 3:
+WHILE attempt_number <= 2:
   Instruction: "Read ./output/[brand_slug]-[start_running_time]/.brand_data.json and ./output/[brand_slug]-[start_running_time]/.content_blueprint.json.
   Score against rubric. lp_type = [lp_type]. attempt_number = [N].
   Save qa_result JSON to ./output/[brand_slug]-[start_running_time]/.qa_result.json. End with WORKER_4_COMPLETE."
@@ -140,7 +140,7 @@ WHILE attempt_number <= 3:
 
   IF qa_result.pass_to_worker_3 = true → break loop, proceed to 5d
 
-  IF attempt_number < 3:
+  IF attempt_number < 2:
     Re-dispatch @agent-lp-content-builder in REVISION MODE:
     "Read ./output/[brand_slug]-[start_running_time]/.content_blueprint.json and ./output/[brand_slug]-[start_running_time]/.qa_result.json.
     Fix ONLY the failing sections listed in qa_result.revision_instructions.
@@ -149,7 +149,7 @@ WHILE attempt_number <= 3:
     Wait for WORKER_2_COMPLETE.
     attempt_number += 1
 
-  IF attempt_number = 3 AND still FAIL:
+  IF attempt_number = 2 AND still FAIL:
     Force-pass. Flag in final report: "FORCE-PASSED — review required."
     Break loop.
 ```

@@ -72,10 +72,15 @@ Top 3 products: Name, Price (USD), Key use case. AOV estimate = average of top 3
 ### TASK 2 — Affiliate Program
 From network listing (use `search_web`): Commission rate (%), commission per sale ($), cookie duration (days), payout threshold, PPC policy, recurring commission, program age.
 
-### TASK 3 — Social Proof
-Trustpilot/Google rating (stars + count), year founded, community presence.
-Use `search_web("[brand_name] trustpilot reviews")`.
-If rating unavailable: mark MISSING (do not estimate).
+### TASK 3 — Social Proof & Trustpilot Deep Dive
+Use `search_web("[brand_name] trustpilot reviews")` to gather ALL trust signals at once:
+- Trustpilot/Google exact numerical rating (e.g. 4.7/5) and total review count
+- Year founded and community presence
+- 2 common praise themes
+- 2 specific real cons/logistics complaints (direct quotes if possible)
+
+**Skip deep dive (quotes & cons) if `lp_type == "advertorial"`** (advertorials focus on story arcs, not mixed reviews).
+If rating unavailable: mark MISSING (do not estimate) and set flag `TRUSTPILOT_INACCESSIBLE`.
 
 ### TASK 4 — Pain Vocabulary + Pain Stack
 - **Pain Stack** (3 specific pains):
@@ -93,19 +98,18 @@ IF `keyword_list` is non-empty → primary = first item.
 IF empty → derive from research.
 
 ### TASK 6 — Competitor Signal
-Runs for coupon LP and comparison LP.
+**Runs ONLY for `lp_type == "comparison"`**. Skip entirely for all other types.
 
 If `competitor_brand` provided → use it directly.
-If NOT provided AND lp_type is coupon or comparison:
+If NOT provided:
 - Intelligently select a known competitor that HIGHLIGHTS the brand's strengths:
   - Brand = premium → pick budget competitor (materials advantage stands out)
   - Brand = budget → pick premium competitor (price advantage stands out)
 - Find: 1 clear brand advantage, 1 clear competitor advantage (honesty signal)
 - Record `competitor_selection_rationale`
 
-If lp_type is review/advertorial/quiz and no competitor_brand → skip.
-
 ### TASK 7 — Material Audit
+**Runs ONLY for `lp_type == "coupon"`**. Skip entirely for all other types.
 From brand_url content: Extract specific product materials/ingredients/fabric/build:
 - Clothing: fabric composition (%), stitching, washability
 - Garden/Soil: N-P-K levels, ingredient sourcing, texture
@@ -116,6 +120,7 @@ From brand_url content: Extract specific product materials/ingredients/fabric/bu
 Output: `material_audit` object.
 
 ### TASK 8 — Logistics Check
+**Runs ONLY for `lp_type == "coupon"` OR `lp_type == "comparison"`**. Skip for others.
 Search brand_url content or use `search_web` for:
 - Free shipping threshold ($)
 - Average shipping cost
@@ -126,24 +131,14 @@ Search brand_url content or use `search_web` for:
 
 Output: `logistics` object.
 
-### TASK 9 — Trustpilot Deep Dive
-Use `search_web("[brand_name] trustpilot reviews")` or `read_url_content(trustpilot_url)`:
-- Exact numerical rating (e.g. 4.7/5) and total review count
-- 2 specific real cons/logistics complaints — direct quotes if possible
-- 2 common praise themes
-
-If page inaccessible after both tools: set `verification_status: "FAILED"`, use placeholders — never guess ratings.
-
-Output: `trustpilot_deep` object.
-
-### TASK 10 — Hero Product
+### TASK 9 — Hero Product
 From fetched content or `search_web`:
 - Identify the best-seller / hero product (most prominent or labeled "Best Seller")
 - Record: name, price (USD), why it's the hero (social proof signal)
 
 Output: `hero_product` object.
 
-### TASK 11 — Best Public Discount
+### TASK 10 — Best Public Discount
 If user did NOT provide `coupon_code`:
 - Use `search_web("[brand_name] coupon code [year]")` or check brand site banners
 - Record: code (or "auto-applied"), discount description

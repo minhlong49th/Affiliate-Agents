@@ -78,11 +78,28 @@ Write to `./output/[brand_slug]-[start_running_time]/.pipeline_input.json`:
 
 ---
 
+## STEP 2.5 — RESEARCH CACHE CHECK
+
+Check if brand data already exists to reuse it and skip W1:
+
+```text
+Find most recent .lp_brand_data.json OR .ppc_brand_data.json for [brand_slug] in ./output/
+IF EXISTS and file age < 168 hours (7 days):
+  Copy to current run's directory as .brand_data.json
+  CACHE HIT → skip Step 3a (ppc-lp-analyst)
+  Log: "CACHE HIT — reusing data for [brand_slug]"
+  Proceed directly to Step 3b
+ELSE:
+  CACHE MISS → proceed to Step 3a
+```
+
+---
+
 ## STEP 3 — SEQUENTIAL PIPELINE DISPATCH
 
 Run each agent in order. Wait for completion signal before next dispatch.
 
-### 3a. Dispatch @agent-ppc-lp-analyst
+### 3a. Dispatch @agent-ppc-lp-analyst (SKIP IF CACHE HIT)
 ```
 Instruction: "Read ./output/[brand_slug]-[start_running_time]/.pipeline_input.json.
 Fetch the landing page. Extract brand data, PPC policy, and strategy.
@@ -109,11 +126,11 @@ Save draft to ./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json.
 End with PPC_AD_COPY_WRITER_COMPLETE."
 ```
 
-### 3d. Dispatch @agent-ppc-qa-compliance (QA LOOP — max 3 auto-fix attempts per asset)
+### 3d. Dispatch @agent-ppc-qa-compliance (QA LOOP — max 1 auto-fix attempt per asset)
 ```
 Instruction: "Read ./output/[brand_slug]-[start_running_time]/.ad_copy_draft.json, ./output/[brand_slug]-[start_running_time]/.brand_data.json,
 and ./references/00-compact-digest.md Section G.
-Run full policy QA. Auto-fix violations (max 3 attempts per asset).
+Run full policy QA. Auto-fix violations (max 1 attempt per asset).
 Flag unresolved as [MANUAL REVIEW REQUIRED].
 Save qa_result to ./output/[brand_slug]-[start_running_time]/.qa_result.json.
 End with PPC_QA_COMPLETE."
@@ -125,8 +142,8 @@ Instruction: "Read ./output/[brand_slug]-[start_running_time]/.qa_result.json, .
 ./output/[brand_slug]-[start_running_time]/.brand_data.json, and ./output/[brand_slug]-[start_running_time]/.pipeline_input.json.
 Generate campaign brief markdown + platform CSV files.
 Save to ./output/[brand_slug]-[start_running_time]/[brand-slug]-[platform]-campaign-brief.md
-and ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv (if google or both)
-and ./output/[brand_slug]-[start_running_time]/[brand-slug]-bing-ads-import.csv (if bing or both).
+and ./output/[brand_slug]-[start_running_time]/[brand-slug]-google-ads-import.csv.
+Note: Bing Ads CSV will be generated automatically by a post-worker script via find-replace, do not generate it.
 End with PPC_OUTPUT_EXPORTER_COMPLETE."
 ```
 

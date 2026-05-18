@@ -70,20 +70,13 @@ This prevents silent Jinja2 rendering where missing fields produce empty strings
 ```bash
 python scripts/generate_lp_coupon_page.py \
   --data "./output/<brand_slug>-<start_running_time>/.content_blueprint.json" \
-  --slug "<brand_slug>" \
+  --slug "<brand_slug>-coupon-lp" \
   --out "./output/<brand_slug>-<start_running_time>/"
 ```
 
-This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>.html`.
+This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html`.
 
-### Step 3 — Rename to Final Output
-
-```bash
-mv "./output/<brand_slug>-<start_running_time>/<brand_slug>.html" \
-   "./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html"
-```
-
-### Step 4 — Verify Output
+### Step 3 — Verify Output
 
 Run these checks:
 
@@ -109,7 +102,7 @@ grep -q 'coupon-reveal-btn' "./output/<brand_slug>-<start_running_time>/<brand_s
 
 If any check fails: log the failure, warn "Manual review recommended", but still output WORKER_3_COMPLETE.
 
-### Step 5 — Signal Completion
+### Step 4 — Signal Completion
 
 Output exactly:
 ```

@@ -58,9 +58,11 @@ Divide headlines into 3 categories:
 
 ---
 
-## TASK 3 — BING ADS ADAPTATION
+## TASK 3 — PLATFORM NOTE
 
-For Bing Ads, you can be slightly more aggressive with urgency or symbols if permitted by the network, but stick to Google's stricter rules for universal compatibility.
+Use the same copy for both Google Ads and Bing Ads.
+Google's stricter character limits and policy rules cover both platforms.
+No separate Bing variant needed.
 
 ---
 

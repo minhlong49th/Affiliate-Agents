@@ -62,20 +62,13 @@ Use `run_command`:
 python scripts/generate_lp_coupon_page.py `
   --data "./output/<brand_slug>-<start_running_time>/.content_blueprint.json" `
   --slug "<brand_slug>" `
-  --out "./output/<brand_slug>-<start_running_time>/"
+  --out "./output/<brand_slug>-<start_running_time>/" `
+  --out-name "<brand_slug>-coupon-lp.html"
 ```
 
-This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>.html`.
+This produces `./output/<brand_slug>-<start_running_time>/<brand_slug>-coupon-lp.html` directly.
 
-### Step 3 — Rename to Final Output
-
-Use `run_command`:
-```powershell
-Rename-Item -Path "./output/<brand_slug>-<start_running_time>/<brand_slug>.html" `
-            -NewName "<brand_slug>-coupon-lp.html"
-```
-
-### Step 4 — Verify Output
+### Step 3 — Verify Output
 
 Run these checks via `run_command`:
 

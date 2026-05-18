@@ -20,21 +20,7 @@ Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.pipeline_in
 
 ---
 
-## FULL_FUNNEL_CACHE_MODE (skip brand re-research)
 
-Check `pipeline_input.json` for key `"full_funnel_cache": true`.
-
-**IF `full_funnel_cache = true`:**
-1. Use `view_file` to read `./output/[brand_slug]-[start_running_time]/.lp_brand_data.json` as base context
-2. Copy it to `./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json` (rename for PPC namespace)
-3. ONLY fetch: `landing_page_url` (via `read_url_content` — extract LP headline, offer, CTA only)
-4. SKIP all: `brand_url` fetch, `search_web` calls for affiliate program data
-5. Merge LP analysis into `lp_analysis` field of output JSON
-6. Set `data_quality.flags = ["FULL_FUNNEL_CACHE_HIT"]`
-
-**IF `full_funnel_cache = false` OR key absent:** → Run all 4 tasks below normally.
-
----
 
 ## WEB FETCH TOOL HIERARCHY (same as LP researcher)
 
@@ -83,9 +69,7 @@ From `search_web` (affiliate program data):
 
 ## TASK 2 — HS-1 PPC POLICY CHECK
 
-**Skip this task if `full_funnel_cache = true`** — hard stop was already verified by the LP orchestrator.
-
-Otherwise, run this check now (orchestrator may have already run it; run again as double-check).
+Run this policy check on the affiliate program.
 
 ### Forbidden categories → FULL STOP:
 ```

@@ -78,19 +78,23 @@ Proceed to Step 4.
  
 ### Step 3.5 — Research Cache Check
 
-Before running Worker 1, check if brand data already exists:
+Before running Worker 1, check if brand data already exists to reuse it and skip W1:
 
-```
-IF ./output/[brand_slug]-[start_running_time]/.ppc_brand_data.json EXISTS:
-  Check file age: (current_time - file_modified_time) in hours
-  IF age < 168 (7 days):
+```text
+IF FULL FUNNEL MODE (invoked from /build-lp):
+  Copy ./output/[brand_slug]-[start_running_time]/.lp_brand_data.json → .ppc_brand_data.json
+  CACHE HIT → skip Worker 1 (pure file operation, no LLM call needed)
+  Proceed directly to Step 5
+
+ELSE (STANDALONE PPC MODE):
+  Find most recent .lp_brand_data.json OR .ppc_brand_data.json for [brand_slug] in ./output/
+  IF EXISTS and file age < 168 hours (7 days):
+    Copy to current run's directory as .ppc_brand_data.json
     CACHE HIT → skip Worker 1
-    Log: "CACHE HIT — reusing ppc_brand_data.json for [brand_slug] (age: Xh)"
+    Log: "CACHE HIT — reusing data for [brand_slug] (age: Xh)"
     Proceed directly to Step 5
   ELSE:
-    CACHE MISS → run Worker 1 (file too old)
-ELSE:
-  CACHE MISS → run Worker 1 (no existing data)
+    CACHE MISS → run Worker 1
 ```
 
 ### Step 4 — LP Analysis (Worker 1)
@@ -131,7 +135,10 @@ Run Worker 5 from ppc-affiliate-pipeline skill.
 - Output (save to `./output/[brand_slug]-[start_running_time]/`):
   - `[brand-slug]-campaign-brief.md`
   - `[brand-slug]-google-ads.csv`
-  - `[brand-slug]-bing-ads.csv`
+- **Post-Worker Script (Bing CSV Generation):**
+  - Read `[brand-slug]-google-ads.csv`
+  - Find & Replace tracking parameters if needed (e.g., `utm_source=google` → `utm_source=bing`)
+  - Save as `[brand-slug]-bing-ads.csv`
 ---
  
 ### Step 9 — Output Report

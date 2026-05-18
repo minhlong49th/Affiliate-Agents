@@ -5,6 +5,12 @@
     "NINEROUTER_WEB_FETCH_MODEL": "fetch-combo",
     "NINEROUTER_WEB_SEARCH_MODEL": "search-combo"
   },
+  "enabledMcpjsonServers": [],
+  "disabledMcpjsonServers": [
+    "chrome-devtools",
+    "stitch",
+    "inspector-jake"
+  ],
   "permissions": {
     "allow": [
       "Bash(curl*)",

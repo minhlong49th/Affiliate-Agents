@@ -83,9 +83,21 @@ Top 3 products: Name, Price (USD), Key use case. AOV estimate = average of top 3
 From network listing: Commission rate (%), commission per sale ($), cookie duration (days),
 payout threshold, PPC policy, recurring commission, program age.
 
-**TASK 3 — Social Proof**
-Trustpilot/Google rating (stars + count), year founded, community presence.
-If rating unavailable: mark MISSING (do not estimate).
+**TASK 3 — Social Proof & Trustpilot Deep Dive**
+If Trustpilot/review URL available:
+- Extract exact numerical rating (e.g. 4.7/5) and total review count
+- Find 2 specific real cons/logistics complaints — pull direct quotes if possible
+- Find 2 common praise themes (what happy customers consistently mention)
+- If page inaccessible (WebFetch fails or returns any error) → retry with 9Router fetch
+- If still inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
+- Extract year founded and community/Amazon presence.
+
+If no review URL provided:
+- Search `[brand_name] trustpilot reviews` via 9Router search
+- If results found: extract rating + review count, set `verification_status: "VERIFIED"`
+- If nothing found: set fields to null, `verification_status: "NOT_PROVIDED"`.
+
+Output: update `social_proof` and `trustpilot_deep` objects.
 
 **TASK 4 — Pain Vocabulary + Pain Stack**
 - **Pain Stack (NEW — 3 specific pains for the V2 Hook):**
@@ -120,6 +132,7 @@ If competitor_brand NOT provided AND lp_type is coupon or comparison:
 If lp_type is review/advertorial/quiz and no competitor_brand → skip.
 
 **TASK 7 — Material Audit (NEW)**
+If lp_type != coupon → skip this task and output empty object.
 From brand_url: Extract specific product materials/ingredients/fabric/build based on product type:
 - Clothing: fabric composition (%), stitching method, washability/care
 - Garden/Soil: N-P-K levels, ingredient sourcing, texture description
@@ -130,6 +143,7 @@ From brand_url: Extract specific product materials/ingredients/fabric/build base
 Output: `material_audit` object.
 
 **TASK 8 — Logistics Check (NEW)**
+If lp_type != coupon AND lp_type != comparison → skip this task and output empty object.
 Search brand_url for shipping and logistics data:
 - Free shipping threshold ($ amount)
 - Average/estimated shipping cost
@@ -139,21 +153,6 @@ Search brand_url for shipping and logistics data:
 - Packaging quality notes (from returns page, FAQ, or Trustpilot mentions)
 
 Output: `logistics` object.
-
-**TASK 9 — Trustpilot Deep Dive (NEW)**
-If Trustpilot/review URL available:
-- Extract exact numerical rating (e.g. 4.7/5) and total review count
-- Find 2 specific real cons/logistics complaints — pull direct quotes if possible
-- Find 2 common praise themes (what happy customers consistently mention)
-- If page inaccessible (WebFetch fails or returns any error) → retry with 9Router fetch
-- If still inaccessible: set `verification_status: "FAILED"`, use placeholders — never guess ratings
-
-If no review URL provided:
-- Search `[brand_name] trustpilot reviews` via 9Router search
-- If results found: extract rating + review count, set `verification_status: "VERIFIED"`
-- If nothing found: set all fields to null, `verification_status: "NOT_PROVIDED"`.
-
-Output: `trustpilot_deep` object.
 
 **TASK 10 — Hero Product (NEW)**
 From brand_url or network listing:

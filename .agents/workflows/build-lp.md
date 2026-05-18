@@ -9,7 +9,7 @@ Build a WordPress-ready affiliate landing page from brand inputs. Orchestrates 4
 
 ## Instructions
 
-### Step 1 — Collect Inputs
+### Step 1 — Collect Inputs, Route LP Type & Hard Stop
 
 Gather the following. Ask the user ONCE if any REQUIRED field is missing:
 
@@ -24,11 +24,7 @@ Gather the following. Ask the user ONCE if any REQUIRED field is missing:
 
 APPROVAL GATE: If lp_type = comparison AND competitor_brand is missing → stop and ask before proceeding.
 
----
-
-### Step 2 — Route LP Type
-
-Detect lp_type from user input:
+**Detect lp_type** from user input:
 - "coupon" / "promo code" / "discount code" → coupon
 - "review" / "worth it" / "legit" → review
 - "vs" / "versus" / "alternative" → comparison
@@ -38,6 +34,17 @@ Detect lp_type from user input:
 
 Normalize keyword_list to array regardless of format (comma, bullets, JSON).
 Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
+
+**Hard Stop** — scan brand_name, niche, lp_type for forbidden categories:
+- Payday loans / cash advance / debt consolidation
+- Gambling / casino / sports betting
+- Crypto / NFT / passive income / MLM
+- Adult / NSFW content
+- Prescription drugs or disease cure claims
+- Weight loss with clinical claims
+- Firearms / weapons / counterfeit goods
+
+If any match → FULL STOP. Do not proceed.
 
 ---
 
@@ -77,21 +84,21 @@ Run Worker 2 from lp-builder-agent skill.
 
 ---
 
-### Step 5 — QA Loop (Worker 4) — max 3 attempts
+### Step 5 — QA Loop (Worker 4) — max 2 attempts
 
 Run Worker 4 from lp-builder-agent skill.
 
 attempt = 1
-WHILE attempt ≤ 3:
+WHILE attempt ≤ 2:
   Score content_blueprint → write .qa_result.json
   IF pass_to_worker_3 = true → break, go to Step 6
-  IF attempt < 3:
+  IF attempt = 1:
     Extract `pass_section_paths` from .qa_result.json
     Send to Worker 2:
       - `revision_instructions` (what to fix)
       - `frozen_sections` = pass_section_paths (what NOT to touch)
     Re-run Step 4 (Worker 2 in REVISION MODE — surgical patch only)
-  IF attempt = 3 AND still FAIL → force-pass, document all issues → go to Step 6
+  IF attempt = 2 AND still FAIL → force-pass, document all issues → go to Step 6
   attempt += 1
 
 RULE: data_quality flags never halt the pipeline. Proceed unconditionally.
@@ -145,7 +152,7 @@ DEPLOY QA (before connecting Google Ads):
 - Each step's JSON output is the next step's input — never skip a handoff
 - All outputs (intermediate JSON + final HTML) → `./output/[brand_slug]-[start_running_time]/`
 - Only 1 approval gate: missing competitor_brand on comparison LP
-- QA retry max 3 attempts → force-pass with documented issues if still failing
+- QA retry max 2 attempts → force-pass with documented issues if still failing
 - Every flag, skip, or force-pass must appear in the output report — no silent failures
 
 ---
