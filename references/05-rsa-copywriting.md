@@ -245,6 +245,7 @@ For every headline, verify:
 - [ ] Makes sense if shown alone (without other headlines)
 - [ ] Different enough from other headlines (no near-duplicates)
 - [ ] ≥ 3 words (Bing requirement)
+- [ ] No prescription drug names (finasteride, minoxidil, etc.) — use "oral treatments", "other options"
 
 For every description, verify:
 - [ ] ≤ 90 chars
@@ -253,3 +254,4 @@ For every description, verify:
 - [ ] Matches LP promise (no bait-and-switch)
 - [ ] Contains CTA
 - [ ] ≥ 3 words
+- [ ] No prescription drug names — use generic descriptors for medical comparisons

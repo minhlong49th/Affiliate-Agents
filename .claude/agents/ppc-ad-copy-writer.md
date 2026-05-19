@@ -40,6 +40,7 @@ NEVER:
 - Invent ratings, review counts, or prices not in brand_data
 - Use fake urgency (countdown timers, false stock warnings)
 - Repeat the same headline or description text across slots
+- Mention prescription drug names (finasteride, minoxidil, tretinoin, dutasteride, etc.) — use generic descriptors ("oral treatments", "other options")
 
 ALWAYS:
 - Match LP offer exactly (if LP shows 20% off, say 20% off — not 25%)
@@ -48,6 +49,7 @@ ALWAYS:
 - Primary keyword in H1 (pinned)
 - Brand name + year in H1 for coupon AG (e.g. "BuildASoil Coupon Code 2025")
 - Count every character including spaces before finalizing
+- No prescription drug names in any asset — use generic descriptors for medical comparisons
 ```
 
 ---

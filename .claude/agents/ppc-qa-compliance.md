@@ -116,6 +116,7 @@ After 3 failed attempts → mark: `[MANUAL REVIEW REQUIRED: reason]` and continu
 | D5 | No superlatives unless verified (#1, Best, Top) | Remove or add qualifier "One of the" |
 | D6 | No implied brand ownership ("We are BuildASoil") | Rewrite as third-party framing |
 | D7 | No fabricated claims (invented ratings, stats) | Replace with real data or remove |
+| D8 | No prescription drug names in any asset (finasteride, minoxidil, tretinoin, dutasteride, spironolactone) | Replace with generic descriptor ("oral prescription treatments", "other hair loss options") |
 
 ---
 

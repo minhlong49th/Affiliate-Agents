@@ -33,6 +33,7 @@ Use `view_file` to read:
 | **C3** | Offers match brand_data exactly | No fake discounts |
 | **C4** | Primary keyword present in headlines | Relevancy score |
 | **C5** | No trademark violations in text | Unless allowed by policy |
+| **C6** | No prescription drug names in ad text (finasteride, minoxidil, tretinoin, dutasteride, spironolactone) | Replace with generic descriptor; Google Ads auto-rejects |
 
 ---
 

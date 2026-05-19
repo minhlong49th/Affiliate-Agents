@@ -46,12 +46,13 @@ FULL STOP (⛔) — output error and halt pipeline:
 - Gambling / casino / sports betting
 - Crypto / NFT / passive income / MLM
 - Adult / NSFW content
-- Prescription drugs or disease cure claims
+- Prescription drugs or disease cure claims (also: ad copy MUST NOT reference prescription drug names like finasteride, minoxidil, tretinoin, etc. — see QA Section J)
 - Weight loss with clinical claims
 - Firearms / weapons / counterfeit goods
 PARTIAL STOP (⚠️) — remove brand keyword groups, continue with non-brand only:
 - Brand name bidding where `ppc_policy = restricted`
 FLAG only (proceed) — if `ppc_policy = not_mentioned`: note "PPC policy unconfirmed — verify with network before launch."
+FLAG (health niche) — if niche ∈ {hair loss, skincare, health, wellness, supplements}: note "Health/pharma niche detected. Ensure ad copy uses zero prescription drug names (finasteride, minoxidil, etc.). See QA Section J for blacklist."
  
 **HS-2 — URL Check**
  

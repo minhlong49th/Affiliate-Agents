@@ -201,6 +201,44 @@ OVERALL STATUS: [READY TO EXPORT / PARTIAL — N assets flagged for manual revie
 
 ---
 
+## SECTION J — Restricted Drug & Pharmaceutical Terms (CRITICAL — Google Ads Policy)
+
+Google Ads restricts prescription drug terms in ad text and landing pages. Even brand name comparisons or "unlike X" framing that names a prescription drug will trigger automated rejection.
+
+| ID | Rule | Auto-fix |
+|---|---|---|
+| J1 | No prescription drug names in any headline, description, sitelink, or callout | Replace with generic descriptor |
+| J2 | No prescription drug names in display paths or structured snippets | Replace with product category |
+| J3 | Landing page (source code) must not contain prescription drug names | Flag for manual review — cannot auto-fix LP |
+| J4 | Negative keyword lists must not include prescription drug names (Google scans all fields) | Remove from negatives; block conceptually via non-branded pharma keywords or pause at bid level |
+
+### Prescription drug name blacklist (non-exhaustive)
+
+```
+finasteride → "oral prescription treatments" / "other treatments"
+minoxidil → "topical alternatives" / "over-the-counter options"
+tretinoin → "prescription retinoids"
+dutasteride → "other DHT blockers"
+spironolactone → "hormonal treatments"
+isotretinoin → "prescription acne treatments"
+sildenafil / tadalafil → "prescription options"
+semaglutide / tirzepatide → "prescription weight management"
+ketoconazole (Rx strength) → "medicated options"
+```
+
+**Auto-fix replacement logic (3-tier):**
+
+1. If drug name used in comparison ("vs finasteride" / "unlike finasteride") → replace with generic category ("vs oral prescriptions" / "unlike oral treatments")
+2. If drug name used as standalone keyword signal → remove and use condition name instead ("hair loss treatments")
+3. If drug name in sitelink description → replace with "prescription alternatives" or remove the sitelink
+
+### Cross-reference
+- Google Ads: "Restricted drug terms" — Prescription drug terms in ad text or landing pages prohibited
+- Microsoft Ads: Similar pharmaceutical advertising restrictions apply
+- EU: Additional redress option available for restricted pharma ads
+
+---
+
 ## SECTION I — Extensions QA (Step 5.5)
 
 Run after generating sitelinks, callouts, and structured snippets.
