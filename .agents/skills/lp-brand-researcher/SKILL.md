@@ -98,15 +98,24 @@ IF `keyword_list` is non-empty → primary = first item.
 IF empty → derive from research.
 
 ### TASK 6 — Competitor Signal
-**Runs ONLY for `lp_type == "comparison"`**. Skip entirely for all other types.
+**Runs for `lp_type == "coupon"` OR `lp_type == "comparison"`**. Skip entirely for other types.
 
 If `competitor_brand` provided → use it directly.
 If NOT provided:
-- Intelligently select a known competitor that HIGHLIGHTS the brand's strengths:
-  - Brand = premium → pick budget competitor (materials advantage stands out)
-  - Brand = budget → pick premium competitor (price advantage stands out)
-- Find: 1 clear brand advantage, 1 clear competitor advantage (honesty signal)
-- Record `competitor_selection_rationale`
+  → Research and identify a REAL competitor that HIGHLIGHTS the brand's strengths.
+  → For coupon LP: find 2 real competitor names with at least 1 verifiable comparison point each (price, source, COA availability, shipping speed, return policy).
+  → Choose competitor strategically:
+    - Brand = premium → pick budget competitor (materials advantage stands out)
+    - Brand = budget → pick premium competitor (price advantage stands out)
+  → Find: 1 clear brand advantage, 1 clear competitor advantage (honesty signal)
+  → Record `competitor_selection_rationale` — explain WHY this competitor was chosen with specific verifiable source.
+
+**CRITICAL — if no real competitor can be identified from research:**
+  → Set `competitor.name` to `null`
+  → Set `competitor_selection_rationale` to `"NO_REAL_COMPETITOR_FOUND"`
+  → Set `competitor.brand_wins` to `[]`
+  → Set `competitor.competitor_wins` to `[]`
+  → Do NOT use placeholder names like "Street Vendors", "Other EU Sites", "Competitor A", "Other Brands". A fake comparison table is worse than no comparison table.
 
 ### TASK 7 — Material Audit
 **Runs ONLY for `lp_type == "coupon"`**. Skip entirely for all other types.

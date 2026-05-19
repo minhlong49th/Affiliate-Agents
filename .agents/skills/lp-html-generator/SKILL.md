@@ -37,12 +37,15 @@ Verify these required keys exist and are non-empty:
 | `brand_name` | string | non-empty |
 | `affiliate_url` | string | non-empty |
 | `slug` | string | non-empty |
+| `disclosure_bar_text` | string | non-empty |
+| `footer_disclosure_text` | string | non-empty |
 | `colors.brand` | string | hex like `#XXXXXX` |
 | `hero.eyebrow` | string | non-empty |
 | `hero.headline_accent` | string | non-empty |
 | `hero.sub` | string | non-empty |
+| `hero.verified_badge_text` | string | non-empty |
 | `coupon.code` | string | non-empty (e.g. `"AUTO-APPLIED"`) |
-| `coupon.usage_seed` | number | integer |
+| `coupon.urgency_note` | string | non-empty |
 | `intro.paragraphs` | array | at least 1 item |
 | `verdict.score` | string | like `"8.5"` |
 | `verdict.pros` | array | at least 1 item |
@@ -51,6 +54,7 @@ Verify these required keys exist and are non-empty:
 | `faq` | array | at least 1 item with `.q` and `.a` |
 | `final_cta.headline` | string | non-empty |
 | `final_cta.btn_label` | string | non-empty |
+| `final_cta.verified_note` | string | non-empty |
 | `sticky_footer.text` | string | non-empty |
 
 If ANY required field is missing or empty: report exactly which fields are absent. STOP. Do NOT run the script.

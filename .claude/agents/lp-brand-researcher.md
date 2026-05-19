@@ -117,17 +117,26 @@ IF keyword_list is non-empty → primary = first item in that list.
 IF keyword_list is empty → derive from research.
 
 **TASK 6 — Competitor Signal**
-Runs for coupon LP and comparison LP.
+Runs for coupon LP or comparison LP.
 
 If competitor_brand provided by user → use it directly.
 If competitor_brand NOT provided AND lp_type is coupon or comparison:
-  → Intelligently select a known competitor that HIGHLIGHTS the brand's strengths.
+  → Research and identify a REAL competitor that HIGHLIGHTS the brand's strengths.
+  → For coupon LP: find 2 real competitor names with at least 1 verifiable comparison point each (price, source, COA availability, shipping speed, return policy).
+  → Choose competitor strategically:
     - Brand = premium materials / high price → pick budget competitor (materials advantage stands out)
     - Brand = budget option → pick premium competitor (price advantage stands out)
   → Always find:
     - 1 clear advantage brand has over competitor (materials, ingredients, build quality, shipping)
     - 1 clear advantage competitor has over brand (honesty signal — price, shipping speed, returns)
-  → Record competitor_selection_rationale.
+  → Record competitor_selection_rationale — explain WHY this competitor was chosen with specific verifiable source.
+
+**CRITICAL — if no real competitor can be identified from research:**
+  → Set `competitor.name` to `null`
+  → Set `competitor_selection_rationale` to `"NO_REAL_COMPETITOR_FOUND"`
+  → Set `competitor.brand_wins` to `[]`
+  → Set `competitor.competitor_wins` to `[]`
+  → Do NOT use placeholder names like "Street Vendors", "Other EU Sites", "Competitor A", "Other Brands". A fake comparison table is worse than no comparison table.
 
 If lp_type is review/advertorial/quiz and no competitor_brand → skip.
 

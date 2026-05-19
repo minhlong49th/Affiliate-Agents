@@ -40,7 +40,7 @@ Compute brand_slug = brand_name lowercase, spaces replaced with hyphens.
 - Gambling / casino / sports betting
 - Crypto / NFT / passive income / MLM
 - Adult / NSFW content
-- Prescription drugs or disease cure claims
+- Prescription drugs or disease cure claims (also: content MUST NOT reference prescription drug names as comparisons — see references/06-policy-compliance.md Section J)
 - Weight loss with clinical claims
 - Firearms / weapons / counterfeit goods
 
